@@ -4,7 +4,7 @@
 # http://github.com/tenstartups/dsc-isy-bridge-docker
 #
 
-FROM tenstartups/alpine-ruby:latest
+FROM tenstartups/rpi-alpine-ruby:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
