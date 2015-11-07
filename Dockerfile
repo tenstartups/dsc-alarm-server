@@ -14,7 +14,7 @@ ENV \
 
 # Install packages.
 RUN \
-  apk add --update libxml2-dev libxslt-dev ruby-nokogiri zlib-dev && \
+  apk --update add libxml2-dev libxslt-dev ruby-nokogiri zlib-dev && \
   rm -rf /var/cache/apk/*
 
 # Install gems.
