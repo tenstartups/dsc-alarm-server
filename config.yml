@@ -1,0 +1,23 @@
+dsc_status:
+  system_alarmed: sAlarm_SystemAlarmed
+  system_disarmed: sAlarm_SystemDisarmed
+  system_ready: sAlarm_SystemReady
+  exit_delay: sAlarm_SystemInExitDelay
+  entry_delay: sAlarm_SystemInEntryDelay
+  armed_stay: sAlarm_SystemArmedStayMode
+  armed_away: sAlarm_SystemArmedAwayMode
+  panel_trouble: sAlarm_PanelTrouble
+  fire_alarm: sAlarm_SystemFireAlarm
+  aux_alarm: sAlarm_SystemAuxAlarm
+  panic_alarm: sAlarm_SystemPanicAlarm
+  zone_1: sAlarm_Zone1Status_FrontDoor
+  zone_2: sAlarm_Zone11Status_PatioDoorLeft
+  zone_3: sAlarm_Zone12Status_PatioDoorRight
+  zone_4: sAlarm_Zone4Status_BackDoor
+  zone_5: sAlarm_Zone5Status_InteriorGarageDoor
+  zone_6: sAlarm_Zone6Status_ExteriorGarageDoor
+  zone_9: sAlarm_Zone9Status_MainFloorMotion
+  zone_10: sAlarm_Zone2Status_BasementMotion
+  zone_11: sAlarm_Zone3Status_BasementSmoke
+  zone_12: sAlarm_Zone10Status_MainFloorSmoke
+  zone_13: sAlarm_Zone13Status_SecondFloorSmoke
