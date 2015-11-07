@@ -20,7 +20,7 @@ RUN \
 
 # Install gems.
 RUN \
-  gem install --no-ri --no-rdoc activesupport awesome_print celluloid colorize rest-client tzinfo-data && \
+  gem install --no-ri --no-rdoc activesupport awesome_print colorize rest-client tzinfo-data && \
   gem install nokogiri -- --use-system-libraries
 
 # Set the working directory.
