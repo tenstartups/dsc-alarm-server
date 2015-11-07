@@ -1,4 +1,4 @@
-DOCKER_IMAGE_NAME=tenstartups/dsc-isy-bridge
+DOCKER_IMAGE_NAME=tenstartups/rpi-dsc-isy-bridge
 
 build: Dockerfile
 	docker build -t ${DOCKER_IMAGE_NAME} .
