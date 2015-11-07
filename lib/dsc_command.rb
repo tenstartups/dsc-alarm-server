@@ -1,5 +1,3 @@
-require 'active_support/core_ext/time'
-
 class DSCCommand
   def initialize(socket)
     @socket = socket
@@ -10,7 +8,7 @@ class DSCCommand
   end
 
   def set_datetime
-    send_command('010' + Time.now.in_time_zone('America/Toronto').strftime('%H%M%m%d%y'))
+    send_command('010' + Time.now.strftime('%H%M%m%d%y'))
   end
 
   private

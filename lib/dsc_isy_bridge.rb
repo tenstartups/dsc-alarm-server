@@ -1,5 +1,3 @@
-require 'active_support'
-require 'active_support/core_ext'
 require 'awesome_print'
 require 'colorize'
 require 'dsc_command'
