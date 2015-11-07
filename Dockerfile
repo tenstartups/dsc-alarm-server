@@ -32,6 +32,3 @@ COPY entrypoint.rb /docker-entrypoint
 
 # Set the entrypoint script.
 ENTRYPOINT ["/docker-entrypoint"]
-
-# Set the default command
-CMD ["/bin/bash"]
