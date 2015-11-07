@@ -4,14 +4,13 @@
 # http://github.com/tenstartups/dsc-isy-bridge-docker
 #
 
-FROM tenstartups/rpi-alpine-ruby:latest
+FROM tenstartups/alpine-ruby:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
 # Set environment
 ENV \
-  HOME=/home/isy \
-  RUBYLIB=/home/isy/lib
+  RUBYLIB=/usr/local/lib/dsc-isy
 
 # Install packages.
 RUN \
@@ -23,11 +22,8 @@ RUN \
   gem install --no-ri --no-rdoc activesupport awesome_print colorize rest-client tzinfo-data && \
   gem install nokogiri -- --use-system-libraries
 
-# Set the working directory.
-WORKDIR "/home/isy"
-
 # Add files to the container.
-COPY lib lib
+COPY lib /usr/local/lib/dsc-isy
 COPY entrypoint.rb /docker-entrypoint
 
 # Set the entrypoint script.
