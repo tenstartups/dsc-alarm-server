@@ -71,33 +71,34 @@ class DSCISYBridge
           event = event_queue.pop
           puts event
           case event.command
-          when '609'
+          when '609' # Zone opened
             isy_rest_client.set_state_variable(@config['dsc_status']["zone_#{event.data.to_i}"], 1)
-          when '610'
+          when '610' # Zone restored
             isy_rest_client.set_state_variable(@config['dsc_status']["zone_#{event.data.to_i}"], 0)
-          when '626'
+          when '626' # System is ready
             isy_rest_client.set_state_variable(@config['dsc_status']['system_ready'], 1)
-          when '651'
+          when '651' # System is not ready
             isy_rest_client.set_state_variable(@config['dsc_status']['system_ready'], 0)
-          when '652'
+          when '652' # System armed (stay or away)
             isy_rest_client.set_state_variable(@config['dsc_status']['system_ready'], 0)
             isy_rest_client.set_state_variable(@config['dsc_status']['system_disarmed'], 0)
             isy_rest_client.set_state_variable(@config['dsc_status']['armed_stay'], event.data =~ /[1-8](1|3)/ ? 1 : 0)
             isy_rest_client.set_state_variable(@config['dsc_status']['armed_away'], event.data =~ /[1-8](2|4)/ ? 1 : 0)
-          when '655'
+          when '655' # System disarmed
             isy_rest_client.set_state_variable(@config['dsc_status']['armed_stay'], 0)
             isy_rest_client.set_state_variable(@config['dsc_status']['armed_away'], 0)
             isy_rest_client.set_state_variable(@config['dsc_status']['system_disarmed'], 1)
             isy_rest_client.set_state_variable(@config['dsc_status']['entry_delay'], 0)
-          when '656'
-            isy_rest_client.set_state_variable(@config['dsc_status']['exit_delay'], 1)
-          when '657'
-            isy_rest_client.set_state_variable(@config['dsc_status']['entry_delay'], 1)
-          when '700', '701'
             isy_rest_client.set_state_variable(@config['dsc_status']['exit_delay'], 0)
-          when '840'
+          when '656' # Exit delay started
+            isy_rest_client.set_state_variable(@config['dsc_status']['exit_delay'], 1)
+          when '657' # Entry delay started
+            isy_rest_client.set_state_variable(@config['dsc_status']['entry_delay'], 1)
+          when '700', '701' # Exit delay ended (armed)
+            isy_rest_client.set_state_variable(@config['dsc_status']['exit_delay'], 0)
+          when '840' # Panel trouble started
             isy_rest_client.set_state_variable(@config['dsc_status']['panel_trouble'], 1)
-          when '841'
+          when '841' # Panel trouble ended
             isy_rest_client.set_state_variable(@config['dsc_status']['panel_trouble'], 0)
           end
         end
