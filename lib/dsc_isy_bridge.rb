@@ -10,7 +10,6 @@ require 'yaml'
 
 class DSCISYBridge
   def start
-    load_config
     listen_events
     process_events
     wait_on_threads
@@ -33,7 +32,7 @@ class DSCISYBridge
   end
 
   def isy_rest_client
-    @isy_rest_client ||= ISYRestClient.new(isy994_uri)
+    @isy_rest_client ||= ISYRestClient.new(isy994_uri, config['dsc_status'])
   end
 
   def event_queue
@@ -47,8 +46,8 @@ class DSCISYBridge
 
   private
 
-  def load_config
-    @config = YAML.load_file(ENV['DSC_ISY_BRIDGE_CONFIG'])
+  def config
+    @config ||= YAML.load_file(ENV['DSC_ISY_BRIDGE_CONFIG'])
   end
 
   def listen_events
@@ -70,34 +69,50 @@ class DSCISYBridge
           puts event
           case event.command
           when '609' # Zone opened
-            isy_rest_client.set_state_variable(@config['dsc_status']["zone_#{event.data.to_i}"], 1)
+            isy_rest_client.set_state("zone_#{event.data.to_i}", 1)
           when '610' # Zone restored
-            isy_rest_client.set_state_variable(@config['dsc_status']["zone_#{event.data.to_i}"], 0)
-          when '626' # System is ready
-            isy_rest_client.set_state_variable(@config['dsc_status']['system_ready'], 1)
+            isy_rest_client.set_state("zone_#{event.data.to_i}", 0)
+          when '625' # Panic alarm
+            isy_rest_client.set_state('panic_alarm', 1)
+          when '626'
+            if event.data[0] == 0 # Panic alarm restored
+              isy_rest_client.set_state('panic_alarm', 0)
+            else # System ready
+              isy_rest_client.set_state('sytem_ready', 1)
+            end
+          when '631' # Auxiliary alarm
+            isy_rest_client.set_state('aux_alarm', 1)
+          when '632' # Auxiliary alarm restored
+            isy_rest_client.set_state('aux_alarm', 0)
           when '651' # System is not ready
-            isy_rest_client.set_state_variable(@config['dsc_status']['system_ready'], 0)
+            isy_rest_client.set_state('system_ready', 0)
           when '652' # System armed (stay or away)
-            isy_rest_client.set_state_variable(@config['dsc_status']['system_ready'], 0)
-            isy_rest_client.set_state_variable(@config['dsc_status']['system_disarmed'], 0)
-            isy_rest_client.set_state_variable(@config['dsc_status']['armed_stay'], event.data =~ /[1-8](1|3)/ ? 1 : 0)
-            isy_rest_client.set_state_variable(@config['dsc_status']['armed_away'], event.data =~ /[1-8](2|4)/ ? 1 : 0)
+            isy_rest_client.set_state('system_ready', 0)
+            isy_rest_client.set_state('system_disarmed', 0)
+            isy_rest_client.set_state('armed_stay', event.data =~ /[1-8](1|3)/ ? 1 : 0)
+            isy_rest_client.set_state('armed_away', event.data =~ /[1-8](2|4)/ ? 1 : 0)
+          when '654' # System alarmed
+            isy_rest_client.set_state('system_alarmed', 1)
           when '655' # System disarmed
-            isy_rest_client.set_state_variable(@config['dsc_status']['armed_stay'], 0)
-            isy_rest_client.set_state_variable(@config['dsc_status']['armed_away'], 0)
-            isy_rest_client.set_state_variable(@config['dsc_status']['system_disarmed'], 1)
-            isy_rest_client.set_state_variable(@config['dsc_status']['entry_delay'], 0)
-            isy_rest_client.set_state_variable(@config['dsc_status']['exit_delay'], 0)
+            isy_rest_client.set_state('armed_stay', 0)
+            isy_rest_client.set_state('armed_away', 0)
+            isy_rest_client.set_state('system_disarmed', 1)
+            isy_rest_client.set_state('entry_delay', 0)
+            isy_rest_client.set_state('exit_delay', 0)
           when '656' # Exit delay started
-            isy_rest_client.set_state_variable(@config['dsc_status']['exit_delay'], 1)
+            isy_rest_client.set_state('exit_delay', 1)
           when '657' # Entry delay started
-            isy_rest_client.set_state_variable(@config['dsc_status']['entry_delay'], 1)
+            isy_rest_client.set_state('entry_delay', 1)
           when '700', '701' # Exit delay ended (armed)
-            isy_rest_client.set_state_variable(@config['dsc_status']['exit_delay'], 0)
+            isy_rest_client.set_state('exit_delay', 0)
           when '840' # Panel trouble started
-            isy_rest_client.set_state_variable(@config['dsc_status']['panel_trouble'], 1)
+            isy_rest_client.set_state('panel_trouble', 1)
           when '841' # Panel trouble ended
-            isy_rest_client.set_state_variable(@config['dsc_status']['panel_trouble'], 0)
+            isy_rest_client.set_state('panel_trouble', 0)
+          when '842' # Fire alarm
+            isy_rest_client.set_state('fire_alarm', 1)
+          when '843' # Fire alarm restored
+            isy_rest_client.set_state('fire_alarm', 0)
           end
         end
         sleep 0.1

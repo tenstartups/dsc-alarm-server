@@ -3,8 +3,9 @@ require 'active_support/core_ext'
 require 'rest-client'
 
 class ISYRestClient
-  def initialize(uri)
+  def initialize(uri, config)
     @isy_uri = uri
+    @dsc_status_config = config
   end
 
   def integer_variables
@@ -19,11 +20,11 @@ class ISYRestClient
     @state_variables = result['CList']['e']
   end
 
-  def set_state_variable(name, value)
-    if (attr = state_variables.find { |a| a['name'] == name })
-      puts "Setting #{name}(#{attr['id']}) = #{value}"
-      get("vars/set/2/#{attr['id']}/#{value}")
-    end
+  def set_state(slug, value)
+    name = @dsc_status_config[slug]
+    return unless (attr = state_variables.find { |a| a['name'] == name })
+    puts "Setting #{name}(#{attr['id']}) = #{value}"
+    get("vars/set/2/#{attr['id']}/#{value}")
   end
 
   def get(path)
