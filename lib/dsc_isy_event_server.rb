@@ -47,7 +47,7 @@ class DSCISYEventServer
   private
 
   def config
-    @config ||= YAML.load_file(ENV['DSC_ISY_BRIDGE_CONFIG'])
+    @config ||= YAML.load_file(ENV['DSC_ISY_CONFIG'])
   end
 
   def listen_events
