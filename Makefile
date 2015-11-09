@@ -1,10 +1,11 @@
 UNAME_S := $(shell uname -m)
 ifneq (,$(findstring arm,$(UNAME_S)))
   PLATFORM=rpi
+	DOCKER_IMAGE_NAME=tenstartups/${PLATFORM}-dsc-isy-connect
 else
   PLATFORM=x64
+	DOCKER_IMAGE_NAME=tenstartups/dsc-isy-connect
 endif
-DOCKER_IMAGE_NAME=tenstartups/${PLATFORM}-dsc-isy-connect
 
 clean_build: ${PLATFORM}/Dockerfile
 	cp ${PLATFORM}/Dockerfile .; docker build --no-cache=true -t ${DOCKER_IMAGE_NAME} .
