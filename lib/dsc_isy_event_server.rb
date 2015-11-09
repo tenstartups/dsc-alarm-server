@@ -8,7 +8,7 @@ require 'nokogiri'
 require 'socket'
 require 'yaml'
 
-class DSCISYBridge
+class DSCISYEventServer
   def start
     listen_events
     process_events
@@ -24,7 +24,7 @@ class DSCISYBridge
   end
 
   def dsc_command
-    @dsc_command ||= DSCCommand.new(it100_socket)
+    @dsc_command ||= DSCCommand.new(socket: it100_socket)
   end
 
   def isy994_uri
@@ -51,8 +51,7 @@ class DSCISYBridge
   end
 
   def listen_events
-    dsc_command.set_datetime
-    dsc_command.request_status
+    dsc_command.status_request
     @event_listen_thread = Thread.new do
       while (line = it100_socket.gets)
         event = DSCEvent.new(line.chop)

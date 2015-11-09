@@ -1,10 +1,10 @@
 #
 # DSC ISY bridge server
 #
-# http://github.com/tenstartups/dsc-isy-connect-docker
+# http://github.com/tenstartups/rpi-dsc-isy-connect-docker
 #
 
-FROM tenstartups/alpine-ruby:latest
+FROM tenstartups/rpi-alpine-ruby:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
