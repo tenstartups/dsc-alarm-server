@@ -88,8 +88,8 @@ class DSCISYEventServer
           when '652' # System armed (stay or away)
             isy_rest_client.set_state('system_ready', 0)
             isy_rest_client.set_state('system_disarmed', 0)
+            isy_rest_client.set_state('armed_away', event.data =~ /[1-8](0|2)/ ? 1 : 0)
             isy_rest_client.set_state('armed_stay', event.data =~ /[1-8](1|3)/ ? 1 : 0)
-            isy_rest_client.set_state('armed_away', event.data =~ /[1-8](2|4)/ ? 1 : 0)
           when '654' # System alarmed
             isy_rest_client.set_state('system_alarmed', 1)
           when '655' # System disarmed
