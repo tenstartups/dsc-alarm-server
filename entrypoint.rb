@@ -8,21 +8,34 @@ Thread.abort_on_exception = true
 $stdout.sync = true
 
 # Call the appropriate command
-case ARGV[0]
-when 'server'
-  DSCISYEventServer.new.start
-else
-  cli_options = ARGV[1..-1]
-                .select { |a| a.start_with?('--') }
-                .map { |a| a.split('=').first }
-                .each { |a| a.slice!('--') }
-  options = {}
-  OptionParser.new do |opts|
-    cli_options.each do |cli_option|
-      opts.on("--#{cli_option}=VALUE") do |v|
-        options[cli_option.to_sym] = v
+if ARGV.size > 0
+  if ARGV[0] == 'server'
+    DSCISYEventServer.new.start
+  elsif (command = DSCCommand.new).respond_to?(ARGV[0])
+    cli_options = ARGV[1..-1].select { |a| a.start_with?('--') }
+    options = nil
+    OptionParser.new do |opts|
+      cli_options.each do |cli_option|
+        opt_name = cli_option[/^--([^=]+)(?:=(.*))?$/, 1]
+        opt_value = cli_option[/^--([^=]+)(?:=(.*))?$/, 2]
+        if opt_value
+          opts.on("--#{opt_name}=VALUE") do |v|
+            (options ||= {})[opt_name.tr('-', '_').to_sym] = v
+          end
+        else
+          opts.on("--#{opt_name}") do
+            (options ||= {})[opt_name.tr('-', '_').to_sym] = true
+          end
+        end
       end
+    end.parse!
+    if options
+      command.send(ARGV[0], **options)
+    else
+      command.send(ARGV[0])
     end
-  end.parse!
-  DSCCommand.new(read_response: true).send(ARGV[0], **options)
+  else
+    # Execute the passed in command if provided
+    exec(*ARGV)
+  end
 end

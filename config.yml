@@ -1,23 +1,143 @@
-dsc_status:
-  system_alarmed: sAlarm_SystemAlarmed
-  system_disarmed: sAlarm_SystemDisarmed
-  system_ready: sAlarm_SystemReady
-  exit_delay: sAlarm_SystemInExitDelay
-  entry_delay: sAlarm_SystemInEntryDelay
-  armed_stay: sAlarm_SystemArmedStayMode
-  armed_away: sAlarm_SystemArmedAwayMode
-  panel_trouble: sAlarm_PanelTrouble
-  fire_alarm: sAlarm_SystemFireAlarm
-  aux_alarm: sAlarm_SystemAuxAlarm
-  panic_alarm: sAlarm_SystemPanicAlarm
-  zone_1: sAlarm_Zone1Status_FrontDoor
-  zone_2: sAlarm_Zone11Status_PatioDoorLeft
-  zone_3: sAlarm_Zone12Status_PatioDoorRight
-  zone_4: sAlarm_Zone4Status_BackDoor
-  zone_5: sAlarm_Zone5Status_InteriorGarageDoor
-  zone_6: sAlarm_Zone6Status_ExteriorGarageDoor
-  zone_9: sAlarm_Zone9Status_MainFloorMotion
-  zone_10: sAlarm_Zone2Status_BasementMotion
-  zone_11: sAlarm_Zone3Status_BasementSmoke
-  zone_12: sAlarm_Zone10Status_MainFloorSmoke
-  zone_13: sAlarm_Zone13Status_SecondFloorSmoke
+---
+dsc_event:
+  zone_alarm:
+    isy_state:
+      s_dsc_intrusion_alarm: 1
+  zone_alarm_restore:
+    isy_state:
+      s_dsc_intrusion_alarm: 0
+  partition_armed:
+    - condition:
+        mode: 0
+      isy_state:
+        s_dsc_armed_state: 2
+        s_dsc_system_ready: 0
+    - condition:
+        mode: 1
+      isy_state:
+        s_dsc_armed_state: 3
+        s_dsc_system_ready: 0
+  partition_disarmed:
+    isy_state:
+      s_dsc_armed_state: 0
+      s_dsc_entry_delay: 0
+  partition_ready:
+    isy_state:
+      s_dsc_system_ready: 1
+  partition_not_ready:
+    isy_state:
+      s_dsc_system_ready: 0
+  exit_delay_in_progress:
+    isy_state:
+      s_dsc_armed_state: 1
+  entry_delay_in_progress:
+    isy_state:
+      s_dsc_entry_delay: 1
+  touble_status:
+    isy_state:
+      s_dsc_panel_trouble: 1
+  touble_status_restore:
+    isy_state:
+      s_dsc_panel_trouble: 0
+  fire_trouble_alarm:
+    isy_state:
+      s_dsc_fire_alarm: 1
+  fire_trouble_alarm_restored:
+    isy_state:
+      s_dsc_fire_alarm: 0
+  key_alarm:
+    isy_state:
+      s_dsc_panic_alarm: 1
+  key_alarm_restored:
+    isy_state:
+      s_dsc_panic_alarm: 0
+  zone_open:
+    - condition:
+        zone: 1
+      isy_state:
+        s_dsc_front_door_open: 1
+    - condition:
+        zone: 2
+      isy_state:
+        s_dsc_left_patio_door_open: 1
+    - condition:
+        zone: 3
+      isy_state:
+        s_dsc_right_patio_door_open: 1
+    - condition:
+        zone: 4
+      isy_state:
+        s_dsc_mudroom_door_open: 1
+    - condition:
+        zone: 5
+      isy_state:
+        s_dsc_garage_interior_door_open: 1
+    - condition:
+        zone: 6
+      isy_state:
+        s_dsc_garage_exterior_door_open: 1
+    - condition:
+        zone: 9
+      isy_state:
+        s_dsc_main_floor_motion: 1
+    - condition:
+        zone: 10
+      isy_state:
+        s_dsc_basement_motion: 1
+    - condition:
+        zone: 11
+      isy_state:
+        s_dsc_basement_smoke: 1
+    - condition:
+        zone: 12
+      isy_state:
+        s_dsc_main_floor_smoke: 1
+    - condition:
+        zone: 13
+      isy_state:
+        s_dsc_second_floor_smoke: 1
+  zone_restored:
+    - condition:
+        zone: 1
+      isy_state:
+        s_dsc_front_door_open: 0
+    - condition:
+        zone: 2
+      isy_state:
+        s_dsc_left_patio_door_open: 0
+    - condition:
+        zone: 3
+      isy_state:
+        s_dsc_right_patio_door_open: 0
+    - condition:
+        zone: 4
+      isy_state:
+        s_dsc_mudroom_door_open: 0
+    - condition:
+        zone: 5
+      isy_state:
+        s_dsc_garage_interior_door_open: 0
+    - condition:
+        zone: 6
+      isy_state:
+        s_dsc_garage_exterior_door_open: 0
+    - condition:
+        zone: 9
+      isy_state:
+        s_dsc_main_floor_motion: 0
+    - condition:
+        zone: 10
+      isy_state:
+        s_dsc_basement_motion: 0
+    - condition:
+        zone: 11
+      isy_state:
+        s_dsc_basement_smoke: 0
+    - condition:
+        zone: 12
+      isy_state:
+        s_dsc_main_floor_smoke: 0
+    - condition:
+        zone: 13
+      isy_state:
+        s_dsc_second_floor_smoke: 0

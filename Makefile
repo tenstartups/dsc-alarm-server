@@ -1,17 +1,17 @@
 UNAME_S := $(shell uname -m)
 ifneq (,$(findstring arm,$(UNAME_S)))
-  PLATFORM=rpi
-	DOCKER_IMAGE_NAME=tenstartups/${PLATFORM}-dsc-isy-connect
+	PLATFORM=arm
+	DOCKER_IMAGE_NAME=tenstartups/rpi-dsc-isy-connect
 else
-  PLATFORM=x64
+	PLATFORM=x86_64
 	DOCKER_IMAGE_NAME=tenstartups/dsc-isy-connect
 endif
 
-clean_build: ${PLATFORM}/Dockerfile
-	cp ${PLATFORM}/Dockerfile .; docker build --no-cache=true -t ${DOCKER_IMAGE_NAME} .
-
 build: ${PLATFORM}/Dockerfile
 	cp ${PLATFORM}/Dockerfile .; docker build -t ${DOCKER_IMAGE_NAME} .
+
+clean_build: ${PLATFORM}/Dockerfile
+	cp ${PLATFORM}/Dockerfile .; docker build --no-cache=true -t ${DOCKER_IMAGE_NAME} .
 
 run: build
 	docker run -it --rm -v /etc/localtime:/etc/localtime -v "${PWD}":/etc/dsc-isy -e IT100_URI=${IT100_URI} -e ISY994_URI=${ISY994_URI} -e DSC_ISY_CONFIG=/etc/dsc-isy/config.yml ${DOCKER_IMAGE_NAME} ${ARGS}
