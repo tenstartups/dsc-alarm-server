@@ -35,7 +35,7 @@ class DSCCommand
     send_command '002'
   end
 
-  def set_time_and_date(datetime: Time.now)
+  def set_datetime(datetime: Time.now)
     send_command "010#{datetime.strftime('%H%M%m%d%y')}"
   end
 
