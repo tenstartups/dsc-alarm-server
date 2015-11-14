@@ -72,15 +72,13 @@ class DSCCommand
     send_command "200#{('%-6s' % code)[0..5].tr(' ', '0')}"
   end
 
-  def key_press(key:)
-    send_command "070#{key}"
+  def key_press(keys:)
+    keys.chars.each { |key| send_command "070#{key}" }
   end
 
   # Complex commands
   def acknowledge_trouble
-    key_press key: '*'
-    key_press key: '2'
-    key_press key: '#'
+    key_press keys: '*2#'
   end
 
   private

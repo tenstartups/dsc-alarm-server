@@ -43,7 +43,7 @@ class RestApiServer < Sinatra::Base
   end
 
   post '/key_press' do
-    dsc_command.key_press(key: params['key'])
+    dsc_command.key_press(key: params['keys'])
     { status: 'ok' }.to_json
   end
 
