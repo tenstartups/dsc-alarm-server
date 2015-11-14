@@ -3,28 +3,25 @@ require 'colorize'
 require 'dsc_command'
 require 'dsc_event'
 require 'isy_rest_client'
+require 'it100_socket'
 require 'json'
 require 'nokogiri'
-require 'socket'
+require 'rest_api_server'
 require 'yaml'
 
-class DSCISYEventServer
-  def start
-    listen_events
-    process_events
-    wait_on_threads
+class DSCEventServer
+  def self.start!
+    DSCEventServer.new.start!
   end
 
-  def it100_uri
-    @it100_uri ||= URI(ENV['IT100_URI'])
-  end
-
-  def it100_socket
-    @it100_socket ||= TCPSocket.open(it100_uri.host, it100_uri.port)
+  def start!
+    start_event_listener
+    start_event_processor
+    start_api_server
   end
 
   def dsc_command
-    @dsc_command ||= DSCCommand.new(it100_socket)
+    @dsc_command ||= DSCCommand.new
   end
 
   def isy994_uri
@@ -39,12 +36,10 @@ class DSCISYEventServer
     @event_queue ||= Queue.new
   end
 
-  def wait_on_threads
-    @event_listen_thread.join
-    @event_process_thread.join
-  end
-
   private
+
+  def initialize
+  end
 
   def config
     return @config unless @config.nil?
@@ -58,18 +53,18 @@ class DSCISYEventServer
     end
   end
 
-  def listen_events
+  def start_event_listener
     dsc_command.status
-    @event_listen_thread = Thread.new do
-      while (line = it100_socket.gets)
+    Thread.new do
+      while (line = IT100Socket.instance.gets)
         event = DSCEvent.new(line.chop)
         event_queue.push(event) if event.valid_checksum?
       end
     end
   end
 
-  def process_events
-    @event_process_thread = Thread.new do
+  def start_event_processor
+    Thread.new do
       loop do
         until event_queue.empty?
           event = event_queue.pop
@@ -79,5 +74,9 @@ class DSCISYEventServer
         sleep 0.1
       end
     end
+  end
+
+  def start_api_server
+    RestApiServer.run!
   end
 end

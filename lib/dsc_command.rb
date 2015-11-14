@@ -1,5 +1,6 @@
 require 'stringio'
 require 'timeout'
+require 'it100_socket'
 
 class IO
   def readline_nonblock
@@ -19,9 +20,8 @@ class IO
 end
 
 class DSCCommand
-  def initialize(socket = nil)
-    @it100_socket = socket
-    @read_response = socket.nil?
+  def initialize(read_response = false)
+    @read_response = read_response
   end
 
   def poll
@@ -72,23 +72,26 @@ class DSCCommand
     send_command "200#{('%-6s' % code)[0..5].tr(' ', '0')}"
   end
 
+  def key_press(key:)
+    send_command "070#{key}"
+  end
+
+  # Complex commands
+  def acknowledge_trouble
+    key_press key: '*'
+    key_press key: '2'
+    key_press key: '#'
+  end
+
   private
-
-  def it100_uri
-    @it100_uri ||= URI(ENV['IT100_URI'])
-  end
-
-  def it100_socket
-    @it100_socket ||= TCPSocket.open(it100_uri.host, it100_uri.port)
-  end
 
   def send_command(command)
     checksum = command.bytes.inject(0) { |a, e| a + e }.to_s(16)[-2..-1].upcase
     message = "#{command}#{checksum}\r\n"
     puts "Sending DSC command - #{message}"
-    it100_socket.write(message)
+    IT100Socket.instance.write(message)
     return unless @read_response
-    while (line = it100_socket.readline_nonblock).length > 0
+    while (line = IT100Socket.instance.readline_nonblock).length > 0
       event = DSCEvent.new(line)
       puts "Response received - #{event.as_json.to_json}" if event.valid_checksum?
     end

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'dsc_isy_event_server'
+require 'dsc_event_server'
 require 'dsc_command'
 require 'optparse'
 
@@ -10,8 +10,8 @@ $stdout.sync = true
 # Call the appropriate command
 if ARGV.size > 0
   if ARGV[0] == 'server'
-    DSCISYEventServer.new.start
-  elsif (command = DSCCommand.new).respond_to?(ARGV[0])
+    DSCEventServer.start!
+  elsif (command = DSCCommand.new(true)).respond_to?(ARGV[0])
     cli_options = ARGV[1..-1].select { |a| a.start_with?('--') }
     options = nil
     OptionParser.new do |opts|
