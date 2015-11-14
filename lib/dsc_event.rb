@@ -44,17 +44,6 @@ class DSCEvent
     data.key?(name.to_sym) || super
   end
 
-  def set_isy_state(client)
-    event_actions = client.config[slug] || []
-    event_actions.each do |defn|
-      if defn['condition'] && defn['condition'].all? { |k, v| send(k) == v }
-        defn['isy_state'].each do |var, val|
-          client.set_state(var, val)
-        end
-      end
-    end
-  end
-
   def as_json
     if slug.nil?
       { command: command, raw_message: raw_message }

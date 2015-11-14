@@ -1,14 +1,15 @@
 require 'active_support'
 require 'active_support/core_ext'
 require 'rest-client'
+require 'singleton'
 
-class ISYRestClient
-  attr_reader :config
+class ISY994RestClient
+  include Singleton
 
-  def initialize(uri, config)
-    @isy_uri = uri
-    @config = config
-    check_variables
+  def check_missing_variables(required_vars)
+    isy_vars = state_variables.map { |e| e['name'] }
+    missing_vars = required_vars - isy_vars
+    missing_vars.each { |v| STDERR.puts("Missing ISY state variable - #{v}") }
   end
 
   def state_variables
@@ -24,16 +25,13 @@ class ISYRestClient
   end
 
   def get(path)
-    result = RestClient.get("#{@isy_uri}/rest/#{path}")
+    result = RestClient.get("#{isy994_uri}/rest/#{path}")
     Hash.from_xml(result)
   end
 
   private
 
-  def check_variables
-    isy_vars = state_variables.map { |e| e['name'] }
-    config_vars = @config.values.reduce([]) { |a, e| a.concat(e) }.map { |e| e['isy_state'] }.reduce([]) { |a, e| a.concat(e.keys) }.uniq.sort
-    missing_vars = config_vars - isy_vars
-    missing_vars.each { |v| STDERR.puts("Missing ISY state variable - #{v}") }
+  def isy994_uri
+    @isy994_uri ||= (ENV['ISY994_URI'] && ENV['ISY994_URI'].length > 0 ? ENV['ISY994_URI'] : 'http://admin:admin@isy994-ems')
   end
 end
