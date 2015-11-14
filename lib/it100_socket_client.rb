@@ -29,22 +29,22 @@ class IT100SocketClient
     send_command "020#{partition}#{program}"
   end
 
-  def arm_away(partition: 1, no_entry_delay: false)
+  def arm_away(partition: nil, no_entry_delay: false)
     partition = 1 if partition.nil? || partition.length == 0
     send_command "#{no_entry_delay ? '032' : '030'}#{partition}"
   end
 
-  def arm_stay(partition: 1)
+  def arm_stay(partition: nil)
     partition = 1 if partition.nil? || partition.length == 0
     send_command "031#{partition}"
   end
 
-  def arm(partition: 1, code:)
+  def arm(partition: nil, code:)
     partition = 1 if partition.nil? || partition.length == 0
     send_command "033#{partition}#{('%-6s' % code)[0..5].tr(' ', '0')}"
   end
 
-  def disarm(partition: 1, code:)
+  def disarm(partition: nil, code:)
     partition = 1 if partition.nil? || partition.length == 0
     send_command "040#{partition}#{('%-6s' % code)[0..5].tr(' ', '0')}"
   end

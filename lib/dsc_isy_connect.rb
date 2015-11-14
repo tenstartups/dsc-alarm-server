@@ -83,7 +83,7 @@ class DSCISYConnect
           puts "Event received - #{event.as_json.to_json}"
           event_actions = config['dsc_event'][event.slug] || []
           event_actions.each do |defn|
-            if defn['condition'] && defn['condition'].all? { |k, v| event.send(k) == v }
+            if defn['condition'].nil? || defn['condition'].all? { |k, v| event.send(k) == v }
               defn['isy_state'].each do |var, val|
                 ISY994RestClient.instance.set_state(var, val)
               end
