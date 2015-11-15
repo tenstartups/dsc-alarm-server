@@ -9,7 +9,7 @@ class ISY994RestClient
   def check_missing_variables(required_vars)
     isy_vars = state_variables.map { |e| e['name'] }
     missing_vars = required_vars - isy_vars
-    missing_vars.each { |v| STDERR.puts("Missing ISY state variable - #{v}") }
+    missing_vars.each { |v| STDERR.puts("[ISY994RestClient] Missing state variable - #{v}".colorize(:yellow)) }
   end
 
   def state_variables
@@ -20,7 +20,7 @@ class ISY994RestClient
 
   def set_state(name, value)
     return unless (attr = state_variables.find { |a| a['name'] == name })
-    puts "Setting ISY state variable - #{name}(#{attr['id']}) = #{value}"
+    puts "[ISY994RestClient] Setting state variable - #{name}(#{attr['id']}) = #{value}".colorize(:yellow)
     get("vars/set/2/#{attr['id']}/#{value}")
   end
 

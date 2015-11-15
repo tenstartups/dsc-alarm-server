@@ -71,9 +71,13 @@ class IT100SocketClient
   end
 
   def event_loop!
-    while (line = it100_socket.gets)
-      event = DSCEvent.new(line.chop)
-      event_subscriptions.each { |s| s.push(event) } if event.valid_checksum?
+    loop do
+      while (line = it100_socket.readline_nonblock).length > 0
+        event = DSCEvent.new(line)
+        puts "[IT100SocketClient] Received event - #{event.as_json.to_json}".colorize(:light_cyan)
+        event_subscriptions.each { |s| s.push(event) } if event.valid_checksum?
+      end
+      sleep 0.1
     end
   end
 
@@ -98,12 +102,12 @@ class IT100SocketClient
   def send_command(*commands)
     command = DSCCommand.new(*commands)
     result = { command: command.message }
-    puts "Sending DSC command - #{command.message.inspect}"
+    puts "[IT100SocketClient] Sending command - #{command.message.inspect}".colorize(:yellow)
     it100_socket.write(command.message)
     # while (line = it100_socket.readline_nonblock).length > 0
     #   event = DSCEvent.new(line)
     #   (result[:response] ||= []) << event.as_json
-    #   puts "Response received - #{event.as_json.to_json}" if event.valid_checksum?
+    #   puts "[ISY994RestClient] Received response - #{event.as_json.to_json}" if event.valid_checksum?
     # end
     result.to_json
   end

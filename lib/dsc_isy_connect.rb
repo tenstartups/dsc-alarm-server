@@ -22,15 +22,15 @@ class DSCISYConnect
             .uniq
             .sort
     )
+
+    puts 'Starting individual processing threads'.colorize(:yellow)
     @threads = []
     @threads << start_rest_server
     @threads << start_event_processor
     @threads << start_event_listener
 
     # Wait for every thread to initialize
-    puts "Waiting for all threads to initialize...".colorize(:yellow)
     sleep(5)
-    puts "Setting up signal handlers...".colorize(:yellow)
 
     # Trap CTRL-C
     Signal.trap('INT') do
@@ -46,6 +46,7 @@ class DSCISYConnect
       exit 1
     end
 
+    puts 'Finished starting individual threads'.colorize(:green)
     @threads.each(&:join)
   end
 
@@ -67,6 +68,10 @@ class DSCISYConnect
     end
   end
 
+  def start_rest_server
+    Thread.new { IT100RestServer.run! }
+  end
+
   def start_event_listener
     Thread.new do
       IT100SocketClient.instance.status
@@ -78,11 +83,8 @@ class DSCISYConnect
     Thread.new do
       IT100SocketClient.instance.subscribe_events(event_queue)
       loop do
-        until event_queue.empty?
-          event = event_queue.pop
-          puts "Event received - #{event.as_json.to_json}"
-          event_actions = config['dsc_event'][event.slug] || []
-          event_actions.each do |defn|
+        until (event = event_queue.pop).nil?
+          (config['dsc_event'][event.slug] || []).each do |defn|
             if defn['condition'].nil? || defn['condition'].all? { |k, v| event.send(k) == v }
               defn['isy_state'].each do |var, val|
                 ISY994RestClient.instance.set_state(var, val)
@@ -92,12 +94,6 @@ class DSCISYConnect
         end
         sleep 0.1
       end
-    end
-  end
-
-  def start_rest_server
-    Thread.new do
-      IT100RestServer.run!
     end
   end
 end
