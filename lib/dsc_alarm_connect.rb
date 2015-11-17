@@ -1,8 +1,8 @@
 require 'awesome_print'
 
 # Require all library files
-Dir[File.join(File.dirname(__FILE__), 'helpers', '*.rb')].each { |f| require f }
-Dir[File.join(File.dirname(__FILE__), 'dsc_alarm_connect', '*.rb')].each { |f| require f }
+Dir[File.join(File.dirname(__FILE__), 'helpers', '*.rb')].reverse.each { |f| require f }
+Dir[File.join(File.dirname(__FILE__), 'dsc_alarm_connect', '*.rb')].reverse.each { |f| require f }
 
 Thread.abort_on_exception = true
 $stdout.sync = true

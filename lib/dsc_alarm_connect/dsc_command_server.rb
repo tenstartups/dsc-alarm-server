@@ -1,4 +1,5 @@
 require 'optparse'
+require 'singleton'
 
 class DSCCommandServer
   include Singleton

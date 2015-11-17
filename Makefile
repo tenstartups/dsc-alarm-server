@@ -15,7 +15,7 @@ clean_build: ${PLATFORM}/Dockerfile
 
 run: build
 	docker run -it --rm \
-	-p 4567 \
+	-p 4567:4567 \
 	-v /etc/localtime:/etc/localtime \
 	-v "${PWD}":/etc/dsc-connect \
 	-e VIRTUAL_HOST=dsc-connnect.docker \
