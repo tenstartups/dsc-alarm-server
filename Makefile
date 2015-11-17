@@ -1,10 +1,10 @@
 UNAME_S := $(shell uname -m)
 ifneq (,$(findstring arm,$(UNAME_S)))
 	PLATFORM=arm
-	DOCKER_IMAGE_NAME=tenstartups/rpi-dsc-isy-connect
+	DOCKER_IMAGE_NAME=tenstartups/rpi-dsc-alarm-connect
 else
 	PLATFORM=x86_64
-	DOCKER_IMAGE_NAME=tenstartups/dsc-isy-connect
+	DOCKER_IMAGE_NAME=tenstartups/dsc-alarm-connect
 endif
 
 build: ${PLATFORM}/Dockerfile
@@ -15,15 +15,15 @@ clean_build: ${PLATFORM}/Dockerfile
 
 run: build
 	docker run -it --rm \
-	-p 8080:4567 \
+	-p 4567 \
 	-v /etc/localtime:/etc/localtime \
-	-v "${PWD}":/etc/dsc-isy \
-	-e VIRTUAL_HOST=dsc-isy.docker \
-	-e RACK_ENV=production \
+	-v "${PWD}":/etc/dsc-connect \
+	-e VIRTUAL_HOST=dsc-connnect.docker \
 	-e IT100_URI=${IT100_URI} \
-	-e ISY994_URI=${ISY994_URI} \
-	-e DSC_ISY_CONFIG=/etc/dsc-isy/config.yml \
-	--name dsc-isy-connect \
+	-e DSC_REST_SERVER_ACTIVE=true \
+	-e DSC_EVENT_HANDLER_ISY994=ISY994EventHandler \
+	-e ISY994_EVENT_HANDLER_CONFIG=/etc/dsc-connect/isy994-event-handler.yml \
+	--name dsc-connect \
 	${DOCKER_IMAGE_NAME} ${ARGS}
 
 push: clean_build

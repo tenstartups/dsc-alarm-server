@@ -1,5 +1,5 @@
-DSC IT-100 to ISY994i Connector Raspberry Pi Service
+DSC alarm system connect tool
 =
 
 Docker image for capturing alarm events from a DSC IT-100 serial interface and
-setting state variables in the ISY994i controller.
+providing pluggable event handlers for them.

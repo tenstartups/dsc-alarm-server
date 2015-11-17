@@ -1,7 +1,7 @@
 #
-# DSC ISY bridge server
+# DSC Alarm connect service
 #
-# http://github.com/tenstartups/dsc-isy-connect-docker
+# http://github.com/tenstartups/dsc-alarm-connect-docker
 #
 
 FROM tenstartups/alpine-ruby:latest
@@ -10,7 +10,7 @@ MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
 # Set environment
 ENV \
-  RUBYLIB=/usr/local/lib/dsc-isy
+  RUBYLIB=/usr/local/lib
 
 # Install packages.
 RUN \
@@ -23,7 +23,7 @@ RUN \
   gem install nokogiri -- --use-system-libraries
 
 # Add files to the container.
-COPY lib /usr/local/lib/dsc-isy
+COPY lib /usr/local/lib
 COPY entrypoint.rb /docker-entrypoint
 
 # Set the entrypoint script.

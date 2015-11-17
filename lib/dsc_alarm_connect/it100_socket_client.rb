@@ -1,10 +1,15 @@
-require 'io'
+require 'securerandom'
 require 'singleton'
 require 'socket'
-require 'stringio'
+require 'timeout'
 
 class IT100SocketClient
   include Singleton
+  include LoggingHelper
+
+  def initialize
+    @subscribers = {}
+  end
 
   def poll
     send_command '000'
@@ -70,19 +75,29 @@ class IT100SocketClient
     key_press keys: '*2#'
   end
 
-  def event_loop!
+  def start!
     loop do
       while (line = it100_socket.readline_nonblock).length > 0
-        event = DSCEvent.new(line)
-        puts "[IT100SocketClient] Received event - #{event.as_json.to_json}".colorize(:light_cyan)
-        event_subscriptions.each { |s| s.push(event) } if event.valid_checksum?
+        event = DSCResponseCommand.new(line)
+        @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
       end
-      sleep 0.1
+      sleep 0.01
     end
   end
 
-  def subscribe_events(queue)
-    event_subscriptions << queue
+  def subscribe_events
+    id = SecureRandom.hex
+    @subscribers[id] = Queue.new
+    id
+  end
+
+  def unsubscribe_events(id)
+    @subscribers.delete(id)
+    id
+  end
+
+  def next_event(id)
+    @subscribers[id].pop if @subscribers[id].length > 0
   end
 
   private
@@ -95,20 +110,24 @@ class IT100SocketClient
     @it100_uri ||= URI(ENV['IT100_URI'] && ENV['IT100_URI'].length > 0 ? ENV['IT100_URI'] : 'tcp://localhost:3000')
   end
 
-  def event_subscriptions
-    @event_subscriptions ||= []
-  end
-
   def send_command(*commands)
-    command = DSCCommand.new(*commands)
+    command = DSCRequestCommand.new(*commands)
     result = { command: command.message }
-    puts "[IT100SocketClient] Sending command - #{command.message.inspect}".colorize(:yellow)
+    sub_id = subscribe_events
+    log "Sending command : #{command.message.inspect}"
     it100_socket.write(command.message)
-    # while (line = it100_socket.readline_nonblock).length > 0
-    #   event = DSCEvent.new(line)
-    #   (result[:response] ||= []) << event.as_json
-    #   puts "[ISY994RestClient] Received response - #{event.as_json.to_json}" if event.valid_checksum?
-    # end
+    loop do
+      begin
+        timeout(2) do
+          sleep 0.01 while (event = IT100SocketClient.instance.next_event(sub_id)).nil?
+          (result[:response] ||= []) << event.as_json
+        end
+      rescue Timeout::Error
+        break
+      end
+    end
     result.to_json
+  ensure
+    unsubscribe_events(sub_id)
   end
 end

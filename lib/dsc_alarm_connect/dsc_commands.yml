@@ -1,0 +1,183 @@
+---
+request:
+  poll:
+    name: Poll
+    command: 000
+  status:
+    name: Status Request
+    command: 001
+  labels:
+    name: Labels Request
+    command: 002
+  set_datetime:
+    name: Set Time and Date
+    command: 010
+    data_pattern: '%{datetime:%H%M%m%d%y}'
+  output_control:
+    name: Command Output Control
+    command: 020
+    data_pattern: '%{partition:%1d}%{program:%1d}'
+  arm_away:
+    name: Partition Arm Control - Away
+    command: 030
+    data_pattern: '%{partition:%1d}'
+  arm_stay:
+    name: Partition Arm Control - Stay
+    command: 031
+    data_pattern: '%{partition:%1d}'
+  arm_no_entry_delay:
+    name: Partition Arm Control - Armed, No Entry Delay
+    command: 032
+    data_pattern: '%{partition:%1d}'
+  arm:
+    name: Partition Arm Control - With Code
+    command: 033
+    data_pattern: '%{partition:%1d}'
+  disarm:
+    name: Partition Disarm Control - With Code
+    command: 040
+    data_pattern: '%{code:%+6d}'
+  timestamp_control:
+    name: Time Stamp Control
+    command: 055
+    data_pattern: '%{on_off:%1d}'
+  datetime_broadcast:
+    name: Time/Date Broadcast Control
+    command: 056
+    data_pattern: '%{on_off:%1d}'
+  key_press:
+    name: Key Pressed (Virt)
+    command: 070
+    data_pattern: '%{key:%1s}'
+  code_send:
+    name: Code Send
+    command: 200
+    data_pattern: '%{code:%+6d}'
+response:
+  command_acknowledge:
+    name: Command Acknowledge
+    command: 500
+    data_pattern: ^(?<command_sent>\d{3})$
+  command_error:
+    name: Command Error
+    command: 501
+  system_error:
+    name: System Error
+    command: 502
+    data_pattern: ^(?<error_code>\d{3})$
+  time_date_broadcast:
+    name: Time/Date Broadcast
+    command: 550
+    data_pattern: ^(?<datetime>\d{10})$
+  broadcast_labels:
+    name: Broadcast Labels
+    command: 550
+    data_pattern: ^(?<label_code>\d{3})(?<label_text>.{32})$
+  zone_alarm:
+    name: Zone Alarm
+    command: 601
+    data_pattern: ^(?<partition>[1-8])(?<zone>\d{3})$
+  zone_alarm_restore:
+    name: Zone Alarm Restored
+    command: 602
+    data_pattern: ^(?<partition>[1-8])(?<zone>\d{3})$
+  zone_open:
+    name: Zone Open
+    command: 609
+    data_pattern: ^(?<zone>\d{3})$
+  zone_restored:
+    name: Zone Restored
+    command: 610
+    data_pattern: ^(?<zone>\d{3})$
+  panic_alarm:
+    name: Panic Alarm
+    command: 625
+  panic_alarm_restored:
+    name: Panic Alarm Restored
+    command: 626
+  auxiliary_input_alarm:
+    name: Partition Ready
+    command: 631
+  auxiliary_input_alarm_restored:
+    name: Partition Ready
+    command: 632
+  partition_ready:
+    name: Partition Ready
+    command: 650
+    data_pattern: ^(?<partition>[1-8])$
+  partition_not_ready:
+    name: Partition Not Ready
+    command: 651
+    data_pattern: ^(?<partition>[1-8])$
+  partition_armed:
+    name: Partition Armed - Descriptive Mode
+    command: 652
+    data_pattern: ^(?<partition>[1-8])(?<mode>[0-4])$
+  partition_alarm:
+    name: Partition in Alarm
+    command: 654
+    data_pattern: ^(?<partition>[1-8])$
+  partition_disarmed:
+    name: Partition Disarmed
+    command: 655
+    data_pattern: ^(?<partition>[1-8])$
+  exit_delay_in_progress:
+    name: Exit Delay in Progress
+    command: 656
+    data_pattern: ^(?<partition>[1-8])$
+  entry_delay_in_progress:
+    name: Entry Delay in Progress
+    command: 657
+    data_pattern: ^(?<partition>[1-8])$
+  keypad_lockout:
+    name: Keypad Lock-out
+    command: 658
+    data_pattern: ^(?<partition>[1-8])$
+  command_output:
+    name: Command Output in Progress
+    command: 660
+    data_pattern: ^(?<partition>[1-8])$
+  partition_busy:
+    name: Partition Busy
+    command: 673
+    data_pattern: ^(?<partition>[1-8])$
+  user_closing:
+    name: User Closing
+    command: 700
+    data_pattern: ^(?<partition>[1-8])(?<user_code>00[0-4][0-9])$
+  user_closing:
+    name: Special Closing
+    command: 701
+    data_pattern: ^(?<partition>[1-8])$
+  touble_status:
+    name: Trouble Status (LED ON)
+    command: 840
+    data_pattern: ^(?<partition>[1-8])$
+  touble_status_restore:
+    name: Trouble Status Restored (LED OFF)
+    command: 841
+    data_pattern: ^(?<partition>[1-8])$
+  fire_trouble_alarm:
+    name: Fire Trouble Alarm
+    command: 842
+  fire_trouble_alarm_restored:
+    name: Fire Trouble Alarm Restored
+    command: 843
+  keybus_fault:
+    name: Keybus Fault
+    command: 896
+  keybus_fault_restore:
+    name: Keybus Fault Restore
+    command: 897
+  lcd_update:
+    name: LCD Update
+    command: 901
+    data_pattern: ^(?<line_no>0|1)(?<column_no>(0[0-9])|(1[0-5]))(?<num_chars>(0[1-9])|(1[0-9])|(3[012]))(?<display_text>.+)$
+  lcd_update:
+    name: LED Status
+    command: 903
+    data_pattern: ^(?<led_no>[1-9])(?<status>[0-3])$
+  software_version:
+    name: Software Version
+    command: 908
+    data_pattern: ^(?<version>\d{6})$

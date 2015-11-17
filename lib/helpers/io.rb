@@ -1,18 +1,19 @@
+require 'stringio'
 require 'timeout'
 
 class IO
-  def readline_nonblock
+  def readline_nonblock(timeout: 1, line_end: "\n")
     StringIO.new.tap do |buffer|
       begin
-        timeout(1) do
+        timeout(timeout) do
           while (ch = recv(1))
             buffer << ch
-            break if ch == "\n"
+            break if buffer.string.ends_with?(line_end)
           end
         end
       rescue Timeout::Error
-        # We timed out waiting therefore continue
+        buffer.string = ''
       end
-    end.string.strip
+    end.string
   end
 end

@@ -1,8 +1,21 @@
-require 'json'
 require 'sinatra/base'
 require 'thin'
 
-class IT100RestServer < Sinatra::Base
+class IT100RestServer
+  include Singleton
+
+  def start!
+    Thin::Server.start SinatraApp,
+                       ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0',
+                       ENV['IT100_REST_SERVER_PORT'] || 4567
+  end
+end
+
+class SinatraApp < Sinatra::Base
+  configure do
+    set :threaded, false
+  end
+
   get '/status' do
     IT100SocketClient.instance.status
   end
