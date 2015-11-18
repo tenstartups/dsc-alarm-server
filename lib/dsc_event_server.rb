@@ -13,7 +13,7 @@ class DSCEventServer
   end
 
   def start!
-    warn 'Press CTRL-C at any time to close all tunnels and exit'
+    warn 'Press CTRL-C at any time to stop all threads and exit'
 
     # Trap CTRL-C
     trap('INT') do
