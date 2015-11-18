@@ -18,7 +18,7 @@ run: build
 	-p 4567:4567 \
 	-v /etc/localtime:/etc/localtime \
 	-v "${PWD}":/etc/dsc-connect \
-	-e VIRTUAL_HOST=dsc-connnect.docker \
+	-e VIRTUAL_HOST=dsc.docker \
 	-e IT100_URI=${IT100_URI} \
 	-e DSC_REST_SERVER_ACTIVE=true \
 	-e DSC_EVENT_HANDLER_ISY994=ISY994EventHandler \

@@ -61,7 +61,7 @@ class IT100SocketClient
   end
 
   def key_press(keys:)
-    keys.chars.each do |ch|
+    keys.chars.map do |ch|
       send_command __method__, key: ch
     end
   end
@@ -72,13 +72,19 @@ class IT100SocketClient
   end
 
   def start!
-    loop do
+    debug 'Entering processing loop'
+    until @loop_exit
       while (line = it100_socket.readline_nonblock).length > 0
         event = DSCResponseCommand.new(line)
         @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
       end
       sleep 0.01
     end
+    debug 'Exiting processing loop'
+  end
+
+  def exit!
+    @loop_exit = true
   end
 
   def subscribe_events
@@ -108,7 +114,7 @@ class IT100SocketClient
 
   def send_command(slug, **data)
     command = DSCRequestCommand.new(slug, data)
-    result = { command: command.message }
+    result = { request: command.as_json }
     sub_id = subscribe_events
     log "Sending command : #{command.as_json.to_json}"
     it100_socket.write(command.message)
@@ -122,7 +128,7 @@ class IT100SocketClient
         break
       end
     end
-    result.to_json
+    result
   ensure
     unsubscribe_events(sub_id)
   end

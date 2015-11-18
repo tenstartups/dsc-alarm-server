@@ -2,6 +2,7 @@ require 'singleton'
 
 class ISY994EventHandler
   include Singleton
+  include LoggingHelper
 
   def initialize
     ISY994RestClient.instance.check_missing_variables(
@@ -15,8 +16,9 @@ class ISY994EventHandler
   end
 
   def start!
+    debug 'Entering processing loop'
     subscription_id = IT100SocketClient.instance.subscribe_events
-    loop do
+    until @loop_exit
       unless (event = IT100SocketClient.instance.next_event(subscription_id)).nil?
         (config['dsc_response_commands'][event.slug] || []).each do |defn|
           next unless defn['conditions'].nil? || defn['conditions'].all? { |k, v| event.send(k) == v }
@@ -28,6 +30,11 @@ class ISY994EventHandler
       sleep 0.01
     end
     IT100SocketClient.instance.unsubscribe_events(subscription_id)
+    debug 'Exiting processing loop'
+  end
+
+  def exit!
+    @loop_exit = true
   end
 
   private

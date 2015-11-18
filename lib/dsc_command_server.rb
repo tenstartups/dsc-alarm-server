@@ -4,6 +4,10 @@ require 'singleton'
 class DSCCommandServer
   include Singleton
 
+  def initialize
+    @threads = []
+  end
+
   def run!(command, *args)
     options = {}
     OptionParser.new do |opts|
@@ -22,13 +26,14 @@ class DSCCommandServer
       end
     end.parse!
 
-    threads = []
+    # Start the logger loop
+    @threads << Thread.new { DSCLogger.instance.start! }
 
     # Start the IT-100 event listener loop
-    threads << Thread.new { IT100SocketClient.instance.start! }
+    @threads << Thread.new { IT100SocketClient.instance.start! }
 
     # Start default and optional event handlers
-    threads << Thread.new { IT100EventHandler.instance.start! }
+    @threads << Thread.new { IT100EventHandler.instance.start! }
 
     # Execute the command
     if options.size > 0
@@ -36,5 +41,14 @@ class DSCCommandServer
     else
       IT100SocketClient.instance.send(ARGV[0])
     end
+
+    # Exit threads
+    IT100SocketClient.instance.exit!
+    IT100EventHandler.instance.exit!
+    sleep(1)
+    DSCLogger.instance.exit!
+
+    # Wait on all threads
+    @threads.each(&:join)
   end
 end
