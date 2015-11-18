@@ -173,7 +173,11 @@ response:
     name: LCD Update
     command: '901'
     data_pattern: ^(?<line_no>0|1)(?<column_no>(0[0-9])|(1[0-5]))(?<num_chars>(0[1-9])|(1[0-9])|(3[012]))(?<display_text>.+)$
-  lcd_update:
+  lcd_cursor:
+    name: LCD Cursor
+    command: '902'
+    data_pattern: ^(?<cursor_type>[012])(?<line_no>0|1)(?<column_no>(0[0-9])|(1[0-5]))$
+  led_status:
     name: LED Status
     command: '903'
     data_pattern: ^(?<led_no>[1-9])(?<status>[0-3])$
