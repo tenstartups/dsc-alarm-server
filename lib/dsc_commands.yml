@@ -181,6 +181,21 @@ response:
     name: LED Status
     command: '903'
     data_pattern: ^(?<led_no>[1-9])(?<status>[0-3])$
+  beep_status:
+    name: Beep Status
+    command: '904'
+    data_pattern: ^(?<beeps>([01][0-9]{2})|(2[0-4][0-9])|(25[0-5]))$
+  tone_status:
+    name: Tone Status
+    command: '905'
+    data_pattern: ^(?<constant_tone_control>[01])(?<number_of_beeps>[0-7])(?<interval>(0[0-9])|(1[0-5]))$
+  buzzer_status:
+    name: Buzzer Status
+    command: '906'
+    data_pattern: ^(?<duration>([01][0-9]{2})|(2[0-4][0-9])|(25[0-5]))$
+  door_chime_status:
+    name: Door Chime Status
+    command: '907'
   software_version:
     name: Software Version
     command: '908'
