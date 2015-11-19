@@ -12,7 +12,7 @@ class DSCLogger
 
   %i[ debug info warn error ].each do |severity|
     define_method :"log_#{severity}" do |source_id, message|
-      log severity: __method__.to_sym, source_id: source_id, message: message
+      log severity: severity.to_sym, source_id: source_id, message: message
     end
   end
 

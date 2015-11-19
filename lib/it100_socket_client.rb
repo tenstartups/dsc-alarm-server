@@ -109,7 +109,10 @@ class IT100SocketClient
   end
 
   def it100_uri
-    @it100_uri ||= URI(ENV['IT100_URI'] && ENV['IT100_URI'].length > 0 ? ENV['IT100_URI'] : 'tcp://localhost:3000')
+    return @it100_uri unless @it100_uri.nil?
+    uri = ENV['IT100_URI'] && ENV['IT100_URI'].length > 0 ? ENV['IT100_URI'] : 'tcp://localhost:3000'
+    uri = "tcp://#{uri}" unless uri =~ /^[A-Za-z]+:\/\//
+    @it100_uri ||= URI(uri)
   end
 
   def send_command(slug, **data)

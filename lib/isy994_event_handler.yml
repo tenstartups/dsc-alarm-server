@@ -1,121 +1,217 @@
 ---
 isy994_uri: http://admin:admin@isy994-ems
 
-dsc_response_commands:
-  zone_alarm:
-    state_variables:
-      s_dsc_intrusion_alarm: 1
-  zone_alarm_restore:
-    state_variables:
-      s_dsc_intrusion_alarm: 0
-  partition_armed:
-    - condition:
-        mode: 0
-      state_variables:
-        s_dsc_system_ready: 0
-        s_dsc_armed_state_variables: 2
-    - condition:
-        mode: 1
-      state_variables:
-        s_dsc_system_ready: 0
-        s_dsc_armed_state_variables: 3
-  partition_disarmed:
-    state_variables:
-      s_dsc_entry_delay: 0
-      s_dsc_armed_state_variables: 0
-  partition_ready:
-    state_variables:
-      s_dsc_system_ready: 1
-  partition_not_ready:
-    state_variables:
-      s_dsc_system_ready: 0
-  exit_delay_in_progress:
-    state_variables:
-      s_dsc_armed_state_variables: 1
-  entry_delay_in_progress:
-    state_variables:
-      s_dsc_entry_delay: 1
-  touble_status:
-    state_variables:
-      s_dsc_panel_trouble: 1
-  touble_status_restore:
-    state_variables:
-      s_dsc_panel_trouble: 0
-  fire_trouble_alarm:
-    state_variables:
-      s_dsc_fire_alarm: 1
-  fire_trouble_alarm_restored:
-    state_variables:
-      s_dsc_fire_alarm: 0
-  key_alarm:
-    state_variables:
-      s_dsc_panic_alarm: 1
-  key_alarm_restored:
-    state_variables:
-      s_dsc_panic_alarm: 0
-  zone_open:
-    - condition:
-        zone: 1
-      state_variables:
-        s_dsc_zone_1: 1
-    - condition:
-        zone: 2
-      state_variables:
-        s_dsc_zone_2: 1
-    - condition:
-        zone: 3
-      state_variables:
-        s_dsc_zone_3: 1
-    - condition:
-        zone: 4
-      state_variables:
-        s_dsc_zone_4: 1
-    - condition:
-        zone: 5
-      state_variables:
-        s_dsc_zone_5: 1
-    - condition:
-        zone: 6
-      state_variables:
-        s_dsc_zone_6: 1
-    - condition:
-        zone: 7
-      state_variables:
-        s_dsc_zone_7: 1
-    - condition:
-        zone: 8
-      state_variables:
-        s_dsc_zone_8: 1
-  zone_restored:
-    - condition:
-        zone: 1
-      state_variables:
-        s_dsc_zone_1: 0
-    - condition:
-        zone: 2
-      state_variables:
-        s_dsc_zone_2: 0
-    - condition:
-        zone: 3
-      state_variables:
-        s_dsc_zone_3: 0
-    - condition:
-        zone: 4
-      state_variables:
-        s_dsc_zone_4: 0
-    - condition:
-        zone: 5
-      state_variables:
-        s_dsc_zone_5: 0
-    - condition:
-        zone: 6
-      state_variables:
-        s_dsc_zone_6: 0
-    - condition:
-        zone: 7
-      state_variables:
-        s_dsc_zone_7: 0
-    - condition:
-        zone: 8
-      state_variables:
-        s_dsc_zone_8: 0
+actions:
+  - if:
+      - slug: zone_alarm
+    then:
+      - state_variable:
+          name: s_dsc_intrusion_alarm
+          value: 1
+  - if:
+      - slug: zone_alarm_restore
+    then:
+      - state_variable:
+          name: s_dsc_intrusion_alarm
+          value: 0
+  - if:
+      - slug: partition_armed
+      - mode: 0
+    then:
+      - state_variable:
+          name: s_dsc_system_ready
+          value: 0
+      - state_variable:
+          name: s_dsc_armed_actions
+          value: 2
+  - if:
+      - slug: partition_armed
+      - mode: 1
+    then:
+      - state_variable:
+          name: s_dsc_system_ready
+          value: 0
+      - state_variable:
+          name: s_dsc_armed_actions
+          value: 3
+  - if:
+      - slug: partition_disarmed
+    then:
+      - state_variable:
+          name: s_dsc_entry_delay
+          value: 0
+      - state_variable:
+          name: s_dsc_armed_actions
+          value: 0
+  - if:
+      - slug: partition_ready
+    then:
+      - state_variable:
+          name: s_dsc_system_ready
+          value: 1
+  - if:
+      - slug: partition_not_ready
+    then:
+      - state_variable:
+          name: s_dsc_system_ready
+          value: 0
+  - if:
+      - slug: exit_delay_in_progress
+    then:
+      - state_variable:
+          name: s_dsc_armed_actions
+          value: 1
+  - if:
+      - slug: entry_delay_in_progress
+    then:
+      - state_variable:
+          name: s_dsc_entry_delay
+          value: 1
+  - if:
+      - slug: touble_status
+    then:
+      - state_variable:
+          name: s_dsc_panel_trouble
+          value: 1
+  - if:
+      - slug: touble_status_restore
+    then:
+      - state_variable:
+          name: s_dsc_panel_trouble
+          value: 0
+  - if:
+      - slug: fire_trouble_alarm
+    then:
+      - state_variable:
+          name: s_dsc_fire_alarm
+          value: 1
+  - if:
+      - slug: fire_trouble_alarm_restored
+    then:
+      - state_variable:
+          name: s_dsc_fire_alarm
+          value: 0
+  - if:
+      - slug: key_alarm
+    then:
+      - state_variable:
+          name: s_dsc_panic_alarm
+          value: 1
+  - if:
+      - slug: key_alarm_restored
+    then:
+      - state_variable:
+          name: s_dsc_panic_alarm
+          value: 0
+  - if:
+      - slug: zone_open
+      - zone: 1
+    then:
+      - state_variable:
+          name: s_dsc_zone_1
+          value: 1
+  - if:
+      - slug: zone_open
+      - zone: 2
+    then:
+      - state_variable:
+          name: s_dsc_zone_2
+          value: 1
+  - if:
+      - slug: zone_open
+      - zone: 3
+    then:
+      - state_variable:
+          name: s_dsc_zone_3
+          value: 1
+  - if:
+      - slug: zone_open
+      - zone: 4
+    then:
+      - state_variable:
+          name: s_dsc_zone_4
+          value: 1
+  - if:
+      - slug: zone_open
+      - zone: 5
+    then:
+      - state_variable:
+          name: s_dsc_zone_5
+          value: 1
+  - if:
+      - slug: zone_open
+      - zone: 6
+    then:
+      - state_variable:
+          name: s_dsc_zone_6
+          value: 1
+  - if:
+      - slug: zone_open
+      - zone: 7
+    then:
+      - state_variable:
+          name: s_dsc_zone_7
+          value: 1
+  - if:
+      - slug: zone_open
+      - zone: 8
+    then:
+      - state_variable:
+          name: s_dsc_zone_8
+          value: 1
+  - if:
+      - slug: zone_restored
+      - zone: 1
+    then:
+      - state_variable:
+          name: s_dsc_zone_1
+          value: 0
+  - if:
+      - slug: zone_restored
+      - zone: 2
+    then:
+      - state_variable:
+          name: s_dsc_zone_2
+          value: 0
+  - if:
+      - slug: zone_restored
+      - zone: 3
+    then:
+      - state_variable:
+          name: s_dsc_zone_3
+          value: 0
+  - if:
+      - slug: zone_restored
+      - zone: 4
+    then:
+      - state_variable:
+          name: s_dsc_zone_4
+          value: 0
+  - if:
+      - slug: zone_restored
+      - zone: 5
+    then:
+      - state_variable:
+          name: s_dsc_zone_5
+          value: 0
+  - if:
+      - slug: zone_restored
+      - zone: 6
+    then:
+      - state_variable:
+          name: s_dsc_zone_6
+          value: 0
+  - if:
+      - slug: zone_restored
+      - zone: 7
+    then:
+      - state_variable:
+          name: s_dsc_zone_7
+          value: 0
+  - if:
+      - slug: zone_restored
+      - zone: 8
+    then:
+      - state_variable:
+          name: s_dsc_zone_8
+          value: 0

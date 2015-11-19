@@ -19,7 +19,7 @@ RUN \
 
 # Install gems.
 RUN \
-  gem install --no-ri --no-rdoc activesupport awesome_print colorize rest-client sinatra tzinfo-data && \
+  gem install --no-ri --no-rdoc activesupport awesome_print colorize pry rest-client sinatra tzinfo-data && \
   gem install nokogiri -- --use-system-libraries
 
 # Add files to the container.
