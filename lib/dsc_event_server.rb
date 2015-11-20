@@ -37,16 +37,17 @@ class DSCEventServer
     @threads << Thread.new { DSCLogger.instance.start! }
 
     # Start the IT-100 event listener loop
-    @threads << Thread.new do
-      IT100SocketClient.instance.status
-      IT100SocketClient.instance.start!
-    end
+    @threads << Thread.new { IT100SocketClient.instance.start! }
 
     # Start the event handler loops
     @handlers.each { |h| @threads << Thread.new { h.instance.start! } }
 
     # Start the API REST server if requested
     @threads << Thread.new { IT100RestServer.instance.start! } if ENV['DSC_REST_SERVER_ACTIVE'] == 'true'
+
+    # Trigger a full status dump
+    sleep(15)
+    IT100SocketClient.instance.status
 
     # Wait on all threads
     @threads.each(&:join)
