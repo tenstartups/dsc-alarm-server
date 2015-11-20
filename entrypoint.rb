@@ -30,7 +30,7 @@ socket_commands = %w(
 case ARGV[0]
 when 'server'
   DSCEventServer.instance.start!
-when socket_commands
+when *socket_commands
   DSCCommandServer.instance.run!(ARGV[0], *ARGV[1..-1].select { |a| a.start_with?('--') })
 when 'pry'
   binding.pry

@@ -1,7 +1,4 @@
 .git
 .gitignore
-.idea
-build
 LICENSE
 README*
-VERSION

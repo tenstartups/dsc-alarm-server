@@ -1,4 +1,4 @@
-UNAME_S := $(shell uname -m)
+NAME_S := $(shell uname -m)
 ifneq (,$(findstring arm,$(UNAME_S)))
 	PLATFORM=arm
 	DOCKER_IMAGE_NAME=tenstartups/rpi-dsc-alarm-connect
@@ -7,11 +7,11 @@ else
 	DOCKER_IMAGE_NAME=tenstartups/dsc-alarm-connect
 endif
 
-build: ${PLATFORM}/Dockerfile
-	cp ${PLATFORM}/Dockerfile .; docker build -t ${DOCKER_IMAGE_NAME} .
+build: Dockerfile.${PLATFORM}
+	docker build --file Dockerfile.${PLATFORM} --tag ${DOCKER_IMAGE_NAME} .
 
-clean_build: ${PLATFORM}/Dockerfile
-	cp ${PLATFORM}/Dockerfile .; docker build --no-cache=true -t ${DOCKER_IMAGE_NAME} .
+clean_build: Dockerfile.${PLATFORM}
+	docker build --no-cache --file Dockerfile.${PLATFORM} --tag ${DOCKER_IMAGE_NAME} .
 
 run: build
 	docker run -it --rm \
@@ -22,7 +22,7 @@ run: build
 	-e IT100_URI=${IT100_URI} \
 	-e DSC_REST_SERVER_ACTIVE=true \
 	-e DSC_EVENT_HANDLER_ISY994=ISY994EventHandler \
-	-e ISY994_EVENT_HANDLER_CONFIG=/etc/dsc-connect/isy994-event-handler.yml \
+	-e ISY994_EVENT_HANDLER_CONFIG=/etc/dsc-connect/isy-config.yml \
 	--name dsc-connect \
 	${DOCKER_IMAGE_NAME} ${ARGS}
 
