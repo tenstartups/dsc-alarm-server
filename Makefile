@@ -1,10 +1,10 @@
 DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect
 UNAME_S := $(shell uname -m)
 ifneq (,$(findstring arm,$(UNAME_S)))
-	PLATFORM := arm
+	PLATFORM := rpi
 	DOCKER_IMAGE_NAME := $(subst /,/${PLATFORM}-,${DOCKER_IMAGE_NAME})
 else
-	PLATFORM := x86_64
+	PLATFORM := x64
 endif
 
 build: Dockerfile.${PLATFORM}
