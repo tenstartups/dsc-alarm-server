@@ -5,8 +5,11 @@ class IT100RestServer
   include Singleton
   include LoggingHelper
 
+  attr_reader :started
+
   def start!
     debug 'Entering processing loop'
+    @started = true
     SinatraApp.run!
     debug 'Exiting processing loop'
   end
@@ -22,7 +25,7 @@ class SinatraApp < Sinatra::Base
     set :bind, ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0'
     set :port, ENV['IT100_REST_SERVER_PORT'] || 4567
     set :run, true
-    set :threaded, true
+    set :threaded, false
     set :traps, false
   end
 

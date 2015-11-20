@@ -4,6 +4,8 @@ require 'singleton'
 class DSCLogger
   include Singleton
 
+  attr_reader :started
+
   def initialize
     @available_colors = []
     @log_colors = {}
@@ -18,6 +20,7 @@ class DSCLogger
 
   def start!
     log!(source_id: self.class.name, severity: :debug, message: 'Entering processing loop')
+    @started = true
     until @loop_exit
       log!(**@log_queue.pop) until @log_queue.empty?
       sleep 0.01

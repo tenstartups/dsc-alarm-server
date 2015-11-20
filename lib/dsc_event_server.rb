@@ -1,4 +1,5 @@
 require 'singleton'
+require 'timeout'
 
 class DSCEventServer
   include Singleton
@@ -13,6 +14,18 @@ class DSCEventServer
   end
 
   def start!
+    # Start the logger loop
+    @threads << Thread.new { DSCLogger.instance.start! }
+
+    # Start the IT-100 event listener loop
+    @threads << Thread.new { IT100SocketClient.instance.start! }
+
+    # Start the event handler loops
+    @handlers.each { |h| @threads << Thread.new { h.instance.start! } }
+
+    # Start the API REST server if requested
+    @threads << Thread.new { IT100RestServer.instance.start! } if ENV['DSC_REST_SERVER_ACTIVE'] == 'true'
+
     warn 'Press CTRL-C at any time to stop all threads and exit'
 
     # Trap CTRL-C
@@ -33,20 +46,18 @@ class DSCEventServer
       @threads.each(&:join)
     end
 
-    # Start the logger loop
-    @threads << Thread.new { DSCLogger.instance.start! }
-
-    # Start the IT-100 event listener loop
-    @threads << Thread.new { IT100SocketClient.instance.start! }
-
-    # Start the event handler loops
-    @handlers.each { |h| @threads << Thread.new { h.instance.start! } }
-
-    # Start the API REST server if requested
-    @threads << Thread.new { IT100RestServer.instance.start! } if ENV['DSC_REST_SERVER_ACTIVE'] == 'true'
-
     # Trigger a full status dump
-    sleep(15)
+    begin
+      timeout(60) do
+        sleep(0.1) until IT100SocketClient.instance.started &&
+                         @handlers.all? { |h| h.instance.started } &&
+                         IT100RestServer.instance.started &&
+                         DSCLogger.instance.started
+      end
+    rescue Timeout::Error
+      STDERR.puts 'Timed out waiting for process threads to start'
+      exit(1)
+    end
     IT100SocketClient.instance.status
 
     # Wait on all threads

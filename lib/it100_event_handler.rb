@@ -4,9 +4,12 @@ class IT100EventHandler
   include Singleton
   include LoggingHelper
 
+  attr_reader :started
+
   def start!
     debug 'Entering processing loop'
     subscription_id = IT100SocketClient.instance.subscribe_events
+    @started = true
     until @loop_exit
       unless (event = IT100SocketClient.instance.next_event(subscription_id)).nil?
         log "Event received : #{event.as_json.to_json}"

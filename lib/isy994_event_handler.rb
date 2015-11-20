@@ -4,6 +4,8 @@ class ISY994EventHandler
   include Singleton
   include LoggingHelper
 
+  attr_reader :started
+
   def initialize
     isy_action_config = config['actions'].map { |e| e['then'] }.inject([]) { |a, e| a.concat(e) }
     ISY994RestClient.instance.check_programs(
@@ -29,6 +31,7 @@ class ISY994EventHandler
   def start!
     debug 'Entering processing loop'
     subscription_id = IT100SocketClient.instance.subscribe_events
+    @started = true
     until @loop_exit
       unless (event = IT100SocketClient.instance.next_event(subscription_id)).nil?
         actions = config['actions'].select do |action|

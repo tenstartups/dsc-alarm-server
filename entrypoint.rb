@@ -35,5 +35,5 @@ when *socket_commands
 when 'pry'
   binding.pry
 else
-  exec(*ARGV)
+  exec(*ARGV) if ARGV.size > 0
 end

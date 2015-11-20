@@ -7,6 +7,8 @@ class IT100SocketClient
   include Singleton
   include LoggingHelper
 
+  attr_reader :started
+
   def initialize
     @subscribers = {}
   end
@@ -73,6 +75,7 @@ class IT100SocketClient
 
   def start!
     debug 'Entering processing loop'
+    @started = true
     until @loop_exit
       while (line = it100_socket.readline_nonblock).length > 0
         event = DSCResponseCommand.new(line)
