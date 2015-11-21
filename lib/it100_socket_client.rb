@@ -76,12 +76,24 @@ class IT100SocketClient
   def start!
     debug 'Entering processing loop'
     @started = true
+    socket_failures = 0
     until @loop_exit
-      while (line = it100_socket.readline_nonblock).length > 0
-        event = DSCResponseCommand.new(line)
-        @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
+      begin
+        while (line = it100_socket.readline_nonblock).length > 0
+          event = DSCResponseCommand.new(line)
+          @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
+        end
+        socket_failures = 0
+        sleep 0.01
+      rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
+             EOFError, Timeout::Error, Net::HTTPBadResponse,
+             Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+        # Reset the socket
+        error "Socket failure reading response : #{e.message}"
+        @it100_socket = nil
+        socket_failures += 1
+        sleep([socket_failures * 2, 30].min)
       end
-      sleep 0.01
     end
     debug 'Exiting processing loop'
   end
@@ -123,16 +135,25 @@ class IT100SocketClient
     result = { request: command.as_json }
     sub_id = subscribe_events
     log "Sending command : #{command.as_json.to_json}"
-    it100_socket.write(command.message)
-    loop do
-      begin
-        timeout(2) do
-          sleep 0.01 while (event = IT100SocketClient.instance.next_event(sub_id)).nil?
-          (result[:response] ||= []) << event.as_json
+    begin
+      it100_socket.write(command.message)
+      loop do
+        begin
+          timeout(2) do
+            sleep 0.01 while (event = IT100SocketClient.instance.next_event(sub_id)).nil?
+            (result[:response] ||= []) << event.as_json
+          end
+        rescue Timeout::Error
+          break
         end
-      rescue Timeout::Error
-        break
       end
+    rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
+           EOFError, Timeout::Error, Net::HTTPBadResponse,
+           Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+      # Reset the socket
+      error "Socket failure sending command : #{e.message}"
+      @it100_socket = nil
+      result['error'] = "Socket failure sending command : #{e.message}"
     end
     result
   ensure
