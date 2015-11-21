@@ -92,7 +92,9 @@ class IT100SocketClient
         error "Socket failure reading response : #{e.message}"
         @it100_socket = nil
         socket_failures += 1
-        sleep([socket_failures * 2, 30].min)
+        next_wait = [socket_failures * 2, 30].min
+        warn "Trying to reopen socket in #{next_wait} second"
+        sleep(next_wait)
       end
     end
     debug 'Exiting processing loop'

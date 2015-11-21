@@ -28,6 +28,21 @@ class DSCEventServer
 
     warn 'Press CTRL-C at any time to stop all threads and exit'
 
+    # Wait for process threads to start
+    begin
+      debug 'Waiting for process threads to start'
+      timeout(60) do
+        sleep(0.1) until IT100SocketClient.instance.started &&
+                         @handlers.all? { |h| h.instance.started } &&
+                         IT100RestServer.instance.started &&
+                         DSCLogger.instance.started
+      end
+      debug 'All processing threads started successfully'
+    rescue Timeout::Error
+      STDERR.puts 'Timed out waiting for process threads to start'
+      exit(1)
+    end
+
     # Trap CTRL-C
     trap('INT') do
       warn 'CTRL-C detected, waiting for all threads to exit gracefully...'
@@ -47,17 +62,6 @@ class DSCEventServer
     end
 
     # Trigger a full status dump
-    begin
-      timeout(60) do
-        sleep(0.1) until IT100SocketClient.instance.started &&
-                         @handlers.all? { |h| h.instance.started } &&
-                         IT100RestServer.instance.started &&
-                         DSCLogger.instance.started
-      end
-    rescue Timeout::Error
-      STDERR.puts 'Timed out waiting for process threads to start'
-      exit(1)
-    end
     IT100SocketClient.instance.status
 
     # Wait on all threads

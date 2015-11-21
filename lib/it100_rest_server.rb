@@ -1,3 +1,4 @@
+require 'json'
 require 'singleton'
 require 'sinatra/base'
 
@@ -5,11 +6,8 @@ class IT100RestServer
   include Singleton
   include LoggingHelper
 
-  attr_reader :started
-
   def start!
     debug 'Entering processing loop'
-    @started = true
     SinatraApp.run!
     debug 'Exiting processing loop'
   end
@@ -17,16 +15,30 @@ class IT100RestServer
   def exit!
     SinatraApp.quit!
   end
+
+  def started
+    bind = ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0'
+    port = ENV['IT100_REST_SERVER_PORT'] || 4567
+    JSON.parse(RestClient.get("http://#{bind}:#{port}/start_check"))['status'] == 'ok'
+  rescue Exception => e
+    false
+  end
 end
 
 class SinatraApp < Sinatra::Base
+  set :server, :thin
+
   configure do
     set :environment, 'production'
     set :bind, ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0'
     set :port, ENV['IT100_REST_SERVER_PORT'] || 4567
     set :run, true
-    set :threaded, false
+    set :threaded, true
     set :traps, false
+  end
+
+  get '/start_check' do
+    { status: 'ok' }.to_json
   end
 
   get '/poll' do

@@ -51,7 +51,7 @@ class DSCLogger
   def log!(source_id:, severity: :info, message:)
     stream, message = case severity
                       when :debug
-                        [:stdout, message.colorize(:purple)]
+                        [:stdout, message.colorize(:light_magenta)]
                       when :info
                         [:stdout, message]
                       when :warn
