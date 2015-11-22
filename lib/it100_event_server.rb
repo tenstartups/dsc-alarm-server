@@ -21,10 +21,13 @@ module DSCConnect
       @process_threads << IT100SocketClient.instance.tap(&:start!)
 
       # Start the default event handler
-      @process_threads << IT100EventHandler.instance.tap(&:start!)
+      @process_threads << LogEventHandler.instance.tap(&:start!)
 
       # Start the event handler loops
       @extra_event_handlers.each { |h| @process_threads << h.instance.tap(&:start!) }
+
+      # Start the heatbeat poll loop
+      @process_threads << IT100HeartbeatPoll.instance.tap(&:start!)
 
       # Start the API REST server if requested
       @process_threads << IT100RestServer.instance.tap(&:start!) if ENV['DSC_REST_SERVER_ACTIVE'] == 'true'

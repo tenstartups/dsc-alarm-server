@@ -145,6 +145,7 @@ module DSCConnect
               (result[:response] ||= []) << event.as_json
             end
           rescue Timeout::Error
+            raise EOFError, 'No response received in time' if result[:response].nil?
             break
           end
         end

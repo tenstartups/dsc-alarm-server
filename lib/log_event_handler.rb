@@ -1,7 +1,7 @@
 require 'singleton'
 
 module DSCConnect
-  class IT100EventHandler
+  class LogEventHandler
     include Singleton
     include LoggingHelper
 

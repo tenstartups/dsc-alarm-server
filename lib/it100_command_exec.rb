@@ -34,7 +34,7 @@ module DSCConnect
       @process_threads << IT100SocketClient.instance.tap(&:start!)
 
       # Start default and optional event handlers
-      @process_threads << IT100EventHandler.instance.tap(&:start!)
+      @process_threads << LogEventHandler.instance.tap(&:start!)
 
       # Execute the command
       if options.size > 0
