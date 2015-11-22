@@ -8,10 +8,6 @@ FROM tenstartups/rpi-alpine-ruby:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
-# Set environment
-ENV \
-  RUBYLIB=/usr/local/lib
-
 # Install packages.
 RUN \
   apk --update add libxml2-dev libxslt-dev ruby-nokogiri zlib-dev && \
