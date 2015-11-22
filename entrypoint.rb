@@ -4,10 +4,10 @@ require 'awesome_print'
 require 'pry'
 
 # Require all library files
-%w( logging_helper dsc_command ).each do |file_name|
-  require File.join(ENV['RUBYLIB'], file_name)
+%w( logging_helper it100_command ).each do |file_name|
+  require "/usr/local/lib/#{file_name}.rb"
 end
-Dir[File.join(ENV['RUBYLIB'], '*.rb')].each { |f| require f }
+Dir['/usr/local/lib/*.rb'].each { |f| load f }
 
 Thread.abort_on_exception = true
 $stdout.sync = true
@@ -29,9 +29,9 @@ socket_commands = %w(
 )
 case ARGV[0]
 when 'server'
-  DSCEventServer.instance.start!
+  DSCConnect::IT100EventServer.instance.start!
 when *socket_commands
-  DSCCommandServer.instance.run!(ARGV[0], *ARGV[1..-1].select { |a| a.start_with?('--') })
+  DSCConnect::IT100CommandExec.instance.run!(ARGV[0], *ARGV[1..-1].select { |a| a.start_with?('--') })
 when 'pry'
   binding.pry
 else

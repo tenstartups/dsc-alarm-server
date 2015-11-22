@@ -21,7 +21,7 @@ run: build
 	-e VIRTUAL_HOST=dsc.docker \
 	-e IT100_URI=${IT100_URI} \
 	-e DSC_REST_SERVER_ACTIVE=true \
-	-e DSC_EVENT_HANDLER_ISY994=ISY994EventHandler \
+	-e DSC_EVENT_HANDLER_ISY994=DSCConnect::ISY994EventHandler \
 	-e ISY994_EVENT_HANDLER_CONFIG=/etc/dsc-connect/isy-config.yml \
 	--name dsc-connect \
 	${DOCKER_IMAGE_NAME} ${ARGS}
