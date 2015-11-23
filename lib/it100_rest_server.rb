@@ -1,37 +1,31 @@
 require 'json'
-require 'singleton'
 require 'sinatra/base'
 
 module DSCConnect
   class IT100RestServer
-    include Singleton
-    include LoggingHelper
+    include WorkerThreadBase
 
-    def start!
-      @process_thread ||= Thread.new do
-        debug 'Starting processing thread'
-        SinatraApp.run!
-        debug 'Quitting processing thread'
-      end
-      @process_thread.tap { sleep 0.01 until thread_ready }
-      debug 'Processing thread ready'
-    end
-
-    def wait!
-      @process_thread.join
+    def do_work
+      SinatraApp.run!
     end
 
     def quit!
       SinatraApp.quit!
-      wait!
+      super
+    end
+
+    def bind_address
+      ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0'
+    end
+
+    def bind_port
+      ENV['IT100_REST_SERVER_PORT'] || 8080
     end
 
     private
 
     def thread_ready
-      bind = ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0'
-      port = ENV['IT100_REST_SERVER_PORT'] || 4567
-      JSON.parse(RestClient.get("http://#{bind}:#{port}/start_check"))['status'] == 'ok'
+      JSON.parse(RestClient.get("http://#{bind_address}:#{bind_port}/start_check"))['status'] == 'ok'
     rescue Exception => e
       false
     end
@@ -42,10 +36,10 @@ module DSCConnect
 
     configure do
       set :environment, 'production'
-      set :bind, ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0'
-      set :port, ENV['IT100_REST_SERVER_PORT'] || 4567
+      set :bind, IT100RestServer.instance.bind_address
+      set :port, IT100RestServer.instance.bind_port
       set :run, true
-      set :threaded, true
+      set :threaded, false
       set :traps, false
     end
 

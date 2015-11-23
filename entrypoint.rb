@@ -4,7 +4,7 @@ require 'awesome_print'
 require 'pry'
 
 # Require all library files
-%w( logging_helper it100_command ).each do |file_name|
+%w( logging_helper it100_command worker_thread_base ).each do |file_name|
   require "/usr/local/lib/#{file_name}.rb"
 end
 Dir['/usr/local/lib/*.rb'].each { |f| load f }

@@ -15,14 +15,13 @@ clean_build: Dockerfile.${DOCKER_PLATFORM}
 
 run: build
 	docker run -it --rm \
-	-p 4567:4567 \
+	-p 8080:8080 \
 	-v /etc/localtime:/etc/localtime \
 	-v "${PWD}":/etc/dsc-connect \
-	-e VIRTUAL_HOST=dsc.docker \
+	-e VIRTUAL_HOST=dsc-connect.docker \
 	-e IT100_URI=${IT100_URI} \
-	-e DSC_REST_SERVER_ACTIVE=true \
-	-e DSC_EVENT_HANDLER_ISY994=DSCConnect::ISY994EventHandler \
-	-e ISY994_EVENT_HANDLER_CONFIG=/etc/dsc-connect/isy-config.yml \
+	-e ISY994_URI=${ISY994_URI} \
+	-e DSC_CONNECT_CONFIG=/etc/dsc-connect/config.yml \
 	--name dsc-connect \
 	${DOCKER_IMAGE_NAME} ${ARGS}
 

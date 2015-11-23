@@ -1,217 +1,226 @@
 ---
+it100_uri: tcp://192.168.0.9:6000
 isy994_uri: http://admin:admin@isy994-ems
 
-actions:
+event_handlers:
+  default:
+    class_name: DSCConnect::ISY994RestClient
+    actions:
+      run_isy_program: run_program
+      set_isy_integer_variable: set_integer
+      set_isy_state_variable: set_state
+
+event_action_handler:
   - if:
       - slug: zone_alarm
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_intrusion_alarm
           value: 1
   - if:
       - slug: zone_alarm_restore
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_intrusion_alarm
           value: 0
   - if:
       - slug: partition_armed
       - mode: 0
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_system_ready
           value: 0
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_armed_actions
           value: 2
   - if:
       - slug: partition_armed
       - mode: 1
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_system_ready
           value: 0
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_armed_actions
           value: 3
   - if:
       - slug: partition_disarmed
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_entry_delay
           value: 0
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_armed_actions
           value: 0
   - if:
       - slug: partition_ready
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_system_ready
           value: 1
   - if:
       - slug: partition_not_ready
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_system_ready
           value: 0
   - if:
       - slug: exit_delay_in_progress
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_armed_actions
           value: 1
   - if:
       - slug: entry_delay_in_progress
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_entry_delay
           value: 1
   - if:
       - slug: touble_status
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_panel_trouble
           value: 1
   - if:
       - slug: touble_status_restore
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_panel_trouble
           value: 0
   - if:
       - slug: fire_trouble_alarm
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_fire_alarm
           value: 1
   - if:
       - slug: fire_trouble_alarm_restored
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_fire_alarm
           value: 0
   - if:
       - slug: key_alarm
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_panic_alarm
           value: 1
   - if:
       - slug: key_alarm_restored
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_panic_alarm
           value: 0
   - if:
       - slug: zone_open
       - zone: 1
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_1
           value: 1
   - if:
       - slug: zone_open
       - zone: 2
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_2
           value: 1
   - if:
       - slug: zone_open
       - zone: 3
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_3
           value: 1
   - if:
       - slug: zone_open
       - zone: 4
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_4
           value: 1
   - if:
       - slug: zone_open
       - zone: 5
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_5
           value: 1
   - if:
       - slug: zone_open
       - zone: 6
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_6
           value: 1
   - if:
       - slug: zone_open
       - zone: 7
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_7
           value: 1
   - if:
       - slug: zone_open
       - zone: 8
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_8
           value: 1
   - if:
       - slug: zone_restored
       - zone: 1
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_1
           value: 0
   - if:
       - slug: zone_restored
       - zone: 2
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_2
           value: 0
   - if:
       - slug: zone_restored
       - zone: 3
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_3
           value: 0
   - if:
       - slug: zone_restored
       - zone: 4
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_4
           value: 0
   - if:
       - slug: zone_restored
       - zone: 5
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_5
           value: 0
   - if:
       - slug: zone_restored
       - zone: 6
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_6
           value: 0
   - if:
       - slug: zone_restored
       - zone: 7
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_7
           value: 0
   - if:
       - slug: zone_restored
       - zone: 8
     then:
-      - state_variable:
+      - set_isy_state_variable:
           name: s_dsc_zone_8
           value: 0

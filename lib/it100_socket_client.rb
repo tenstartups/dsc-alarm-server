@@ -1,15 +1,17 @@
 require 'securerandom'
-require 'singleton'
 require 'socket'
+require 'thread'
 require 'timeout'
 
 module DSCConnect
+  class IT100SocketError < StandardError; end
+
   class IT100SocketClient
-    include Singleton
-    include LoggingHelper
+    include WorkerThreadBase
 
     def initialize
       @subscribers = {}
+      @socket_mutex = Mutex.new
     end
 
     %i[ poll status labels ].each do |method_name|
@@ -76,38 +78,28 @@ module DSCConnect
       key_press keys: '*2#'
     end
 
-    def start!
-      @process_thread ||= Thread.new do
-        debug 'Starting processing thread'
-        @thread_ready = true
-        until @quit_thread
-          with_socket_retry do
-            while (line = it100_socket.readline_nonblock).length > 0
-              event = IT100ResponseCommand.new(line)
-              @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
-            end
-          end
-          sleep 0.01
+    def do_work
+      socket_retry do
+        while (line = socket_readline).length > 0
+          event = IT100ResponseCommand.new(line)
+          log "Event received : #{event.as_json.to_json}"
+          @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
         end
-        debug 'Quitting processing thread'
       end
-      @process_thread.tap { sleep 0.01 until @thread_ready }
-      debug 'Processing thread ready'
     end
 
-    def wait!
-      @process_thread.join
-    end
-
-    def quit!
-      @quit_thread = true
-      wait!
-    end
-
-    def subscribe_events
+    def subscribe_events(&block)
       id = SecureRandom.hex
       @subscribers[id] = Queue.new
-      id
+      if block_given?
+        begin
+          block.call(id)
+        ensure
+          unsubscribe_events(id)
+        end
+      else
+        id
+      end
     end
 
     def unsubscribe_events(id)
@@ -121,61 +113,95 @@ module DSCConnect
 
     private
 
-    def it100_socket
-      @it100_socket ||= TCPSocket.open(it100_uri.host, it100_uri.port)
+    def it100_uri
+      uri = ENV['IT100_URI'] if ENV['IT100_URI'] && ENV['IT100_URI'].length > 0
+      uri ||= Configuration.instance.config['it100_uri']
+      uri ||= 'tcp://localhost:3000'
+      uri = "tcp://#{uri}" unless uri =~ /^[A-Za-z]+:\/\//
+      URI(uri)
     end
 
-    def it100_uri
-      return @it100_uri unless @it100_uri.nil?
-      uri = ENV['IT100_URI'] && ENV['IT100_URI'].length > 0 ? ENV['IT100_URI'] : 'tcp://localhost:3000'
-      uri = "tcp://#{uri}" unless uri =~ /^[A-Za-z]+:\/\//
-      @it100_uri ||= URI(uri)
+    def socket_readline
+      with_socket { |s| s.readline_nonblock(timeout: 0.5, line_end: "\r\n") }
+      rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
+             EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
+             Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+        raise IT100SocketError, e.message
+    end
+
+    def socket_writeline(line)
+      with_socket { |s| s.write(line) }
+      rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
+             EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
+             Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+        raise IT100SocketError, e.message
     end
 
     def send_command(command)
       result = { request: command.as_json }
-      sub_id = subscribe_events
-      with_socket_retry(0) do
+      socket_retry(1) do
         log "Sending command : #{command.as_json.to_json}"
-        it100_socket.write(command.message)
-        loop do
-          begin
-            timeout(2) do
-              sleep 0.01 while (event = IT100SocketClient.instance.next_event(sub_id)).nil?
-              (result[:response] ||= []) << event.as_json
+        subscribe_events do |sub_id|
+          socket_writeline(command.message)
+          loop do
+            begin
+              timeout(2) do
+                sleep 0.01 while (event = IT100SocketClient.instance.next_event(sub_id)).nil?
+                (result[:response] ||= []) << event.as_json
+              end
+            rescue Timeout::Error
+              raise IT100SocketError, 'No response received in time' if result[:response].nil?
+              break
             end
-          rescue Timeout::Error
-            raise EOFError, 'No response received in time' if result[:response].nil?
-            break
           end
         end
       end
       result
-    ensure
-      unsubscribe_events(sub_id)
     end
 
-    def with_socket_retry(max_num_failures = nil, &block)
+    def socket_retry(max_num_retries = nil, &block)
+      result = nil
       num_failures = 0
       next_retry_at = Time.now.to_i
-      success = false
-      until @quit_thread || success || (max_num_failures && num_failures > max_num_failures)
-        if Time.now.to_i >= next_retry_at
-          begin
-            block.call(num_failures)
-            success = true
-          rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
-                 EOFError, Timeout::Error, Net::HTTPBadResponse,
-                 Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-            error "Socket failure : #{e.message}"
-            @it100_socket = nil
-            num_failures += 1
-            retry_wait = [num_failures * 2, 30].min
-            warn "Waiting #{retry_wait} seconds before trying again"
-            next_retry_at = Time.now.to_i + retry_wait
-          end
-        end
+      loop do
         sleep 0.01
+        break if quit_thread?
+        next unless Time.now.to_i >= next_retry_at
+        begin
+          result = block.call(num_failures)
+          break # success
+        rescue IT100SocketError => e
+          error "Socket failure : #{e.message}"
+          reset_socket
+          break if max_num_retries && num_failures >= max_num_retries
+          num_failures += 1
+          next_retry_at = Time.now.to_i + (retry_wait = [num_failures * 2, 30].min)
+          warn "Waiting #{retry_wait} seconds before trying again"
+        end
+      end
+      result
+    end
+
+    def reset_socket
+      @socket_mutex.synchronize do
+        return if @it100_socket.nil?
+        debug "Closing socket at #{it100_uri}"
+        begin
+          @it100_socket.close
+        rescue StandardError => e
+          error "Socket failure : #{e.message}"
+        end
+        @it100_socket = nil
+      end
+    end
+
+    def with_socket(&block)
+      @socket_mutex.synchronize do
+        if @it100_socket.nil?
+          debug "Opening socket at #{it100_uri}"
+          @it100_socket = TCPSocket.open(it100_uri.host, it100_uri.port)
+        end
+        block.call(@it100_socket)
       end
     end
   end

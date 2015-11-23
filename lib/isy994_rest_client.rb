@@ -35,7 +35,7 @@ module DSCConnect
       @state_variables ||= get('vars/definitions/2')['CList']['e']
     end
 
-    def run_program(name, command = :if)
+    def run_program(name:, command: :if)
       command = command.to_s.downcase.to_sym
       command = :if unless %i[ if then else ].include?(command)
       cmd = case command
@@ -49,44 +49,46 @@ module DSCConnect
         'runIf'
       end
       if (attr = programs.find { |a| a['name'] == name })
-        log "Running program : #{name} [#{attr['id']}] -> #{command}"
+        log "Running program #{name} [#{attr['id']}] #{command} command"
         result = get("programs/#{attr['id']}/#{cmd}")
         log "REST response : #{result['RestResponse'].to_json}"
       else
-        warn "NOT running missing program : #{name} -> #{command}"
+        warn "Missing program #{name}, NOT running command #{command}"
       end
     end
 
-    def set_integer_variable(name, value)
+    def set_integer(name:, value:)
       if (attr = integer_variables.find { |a| a['name'] == name })
-        log "Setting integer variable : #{name} [#{attr['id']}] = #{value}"
+        log "Setting integer variable #{name} [#{attr['id']}] to #{value}"
         result = get("vars/set/1/#{attr['id']}/#{value}")
         log "REST response : #{result['RestResponse'].to_json}"
       else
-        warn "NOT setting missing integer variable : #{name} = #{value}"
+        warn "Missing integer variable #{name}, NOT setting value to #{value}"
       end
     end
 
-    def set_state_variable(name, value)
+    def set_state(name:, value:)
       if (attr = state_variables.find { |a| a['name'] == name })
-        log "Setting state variable : #{name} [#{attr['id']}] = #{value}"
+        log "Setting state variable #{name} [#{attr['id']}] to #{value}"
         result = get("vars/set/2/#{attr['id']}/#{value}")
         log "REST response : #{result['RestResponse'].to_json}"
       else
-        warn "NOT setting missing state variable : #{name} = #{value}"
+        warn "Missing state variable #{name}, NOT setting value to #{value}"
       end
     end
 
     def get(path)
       result = RestClient.get("#{isy994_uri}/rest/#{path}")
       Hash.from_xml(result)
+    rescue SocketError => e
+      raise ActionError, e.message
     end
 
     private
 
     def isy994_uri
       @isy994_uri ||= ENV['ISY994_URI'] if ENV['ISY994_URI'] && ENV['ISY994_URI'].length > 0
-      @isy994_uri ||= YAML.load_file(ENV['ISY994_EVENT_HANDLER_CONFIG'])['isy994_uri'] if ENV['ISY994_EVENT_HANDLER_CONFIG'] && File.exist?(ENV['ISY994_EVENT_HANDLER_CONFIG'])
+      @isy994_uri ||= Configuration.instance.config['isy994_uri']
       @isy994_uri ||= 'http://admin:admin@isy994-ems'
     end
   end

@@ -1,16 +1,15 @@
-require 'singleton'
 require 'timeout'
 
 module DSCConnect
   class IT100EventServer
-    include Singleton
     include LoggingHelper
+    include WorkerThreadBase
 
     def initialize
       @process_threads = []
-      @extra_event_handlers = ENV.keys.grep(/^DSC_EVENT_HANDLER_([_A-Z0-9]+)/)
-                              .map { |e| ENV[e] }.uniq
-                              .map { |h| ActiveSupport::Inflector.constantize(h) }
+      @extra_event_handlers = [IT100EventActionHandler]
+      ENV.keys.grep(/^DSC_EVENT_HANDLER_([_A-Z0-9]+)/).map { |e| ENV[e] }.uniq
+        .each { |h| @extra_event_handlers << ActiveSupport::Inflector.constantize(h) }
     end
 
     def start!
@@ -20,9 +19,6 @@ module DSCConnect
       # Start the IT-100 event listener loop
       @process_threads << IT100SocketClient.instance.tap(&:start!)
 
-      # Start the default event handler
-      @process_threads << LogEventHandler.instance.tap(&:start!)
-
       # Start the event handler loops
       @extra_event_handlers.each { |h| @process_threads << h.instance.tap(&:start!) }
 
@@ -30,7 +26,7 @@ module DSCConnect
       @process_threads << IT100HeartbeatPoll.instance.tap(&:start!)
 
       # Start the API REST server if requested
-      @process_threads << IT100RestServer.instance.tap(&:start!) if ENV['DSC_REST_SERVER_ACTIVE'] == 'true'
+      @process_threads << IT100RestServer.instance.tap(&:start!)
 
       # Trap CTRL-C and SIGTERM
       trap('INT') do
