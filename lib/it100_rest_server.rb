@@ -44,46 +44,57 @@ module DSCConnect
     end
 
     get '/start_check' do
+      content_type :json
       JSON.pretty_generate(status: 'ok')
     end
 
     get '/poll' do
+      content_type :json
       run_command :poll, pretty: params['pretty']
     end
 
     get '/status' do
+      content_type :json
       run_command :status, pretty: params['pretty']
     end
 
     get '/labels' do
+      content_type :json
       run_command :labels, pretty: params['pretty']
     end
 
     post '/set_datetime' do
+      content_type :json
       run_command :set_datetime, pretty: params['pretty']
     end
 
     post '/arm_away' do
+      content_type :json
       run_command :arm_away, partition: params['partition'], pretty: params['pretty']
     end
 
     post '/arm_stay' do
+      content_type :json
       run_command :arm_stay, partition: params['partition'], pretty: params['pretty']
     end
 
     post '/arm' do
+      content_type :json
       run_command :arm, partition: params['partition'], code: params['code'], pretty: params['pretty']
     end
 
     post '/disarm' do
+      content_type :json
       run_command :disarm, partition: params['partition'], code: params['code'], pretty: params['pretty']
     end
 
     post '/key_press' do
+      content_type :json
       run_command :key_press, key: params['keys'], pretty: params['pretty']
     end
 
     post '/acknowledge_trouble' do
+      content_type :json
       run_command :acknowledge_trouble, pretty: params['pretty']
     end
 
