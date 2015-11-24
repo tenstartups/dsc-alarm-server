@@ -1,5 +1,4 @@
-DSC alarm system connect tool
+DSC alarm system connect docker image
 =
 
-Docker image for capturing alarm events from a DSC IT-100 serial interface and
-providing pluggable event handlers for them.
+Ruby application for communicating with a DSC IT-100 serial module through a TCP/IP serial server, in order to send commands, and receive events for triggering actions.

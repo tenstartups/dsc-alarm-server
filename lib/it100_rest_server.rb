@@ -44,47 +44,57 @@ module DSCConnect
     end
 
     get '/start_check' do
-      { status: 'ok' }.to_json
+      JSON.pretty_generate(status: 'ok')
     end
 
     get '/poll' do
-      IT100SocketClient.instance.poll.to_json
+      run_command :poll
     end
 
     get '/status' do
-      IT100SocketClient.instance.status.to_json
+      run_command :status
     end
 
     get '/labels' do
-      IT100SocketClient.instance.labels.to_json
+      run_command :labels
     end
 
     post '/set_datetime' do
-      IT100SocketClient.instance.set_datetime.to_json
+      run_command :set_datetime
     end
 
     post '/arm_away' do
-      IT100SocketClient.instance.arm_away(partition: params['partition']).to_json
+      run_command :arm_away, partition: params['partition']
     end
 
     post '/arm_stay' do
-      IT100SocketClient.instance.arm_stay(partition: params['partition']).to_json
+      run_command :arm_stay, partition: params['partition']
     end
 
     post '/arm' do
-      IT100SocketClient.instance.arm(partition: params['partition'], code: params['code']).to_json
+      run_command :arm, partition: params['partition'], code: params['code']
     end
 
     post '/disarm' do
-      IT100SocketClient.instance.disarm(partition: params['partition'], code: params['code']).to_json
+      run_command :disarm, partition: params['partition'], code: params['code']
     end
 
     post '/key_press' do
-      IT100SocketClient.instance.key_press(key: params['keys']).to_json
+      run_command :key_press, key: params['keys']
     end
 
     post '/acknowledge_trouble' do
-      IT100SocketClient.instance.acknowledge_trouble.to_json
+      run_command :acknowledge_trouble
+    end
+
+    private
+
+    def run_command(slug, **params)
+      if params == {}
+        JSON.pretty_generate(IT100SocketClient.instance.send(slug))
+      else
+        JSON.pretty_generate(IT100SocketClient.instance.send(slug, **params))
+      end
     end
   end
 end
