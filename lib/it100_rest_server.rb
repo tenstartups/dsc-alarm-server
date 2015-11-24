@@ -48,53 +48,55 @@ module DSCConnect
     end
 
     get '/poll' do
-      run_command :poll
+      run_command :poll, pretty: params['pretty']
     end
 
     get '/status' do
-      run_command :status
+      run_command :status, pretty: params['pretty']
     end
 
     get '/labels' do
-      run_command :labels
+      run_command :labels, pretty: params['pretty']
     end
 
     post '/set_datetime' do
-      run_command :set_datetime
+      run_command :set_datetime, pretty: params['pretty']
     end
 
     post '/arm_away' do
-      run_command :arm_away, partition: params['partition']
+      run_command :arm_away, partition: params['partition'], pretty: params['pretty']
     end
 
     post '/arm_stay' do
-      run_command :arm_stay, partition: params['partition']
+      run_command :arm_stay, partition: params['partition'], pretty: params['pretty']
     end
 
     post '/arm' do
-      run_command :arm, partition: params['partition'], code: params['code']
+      run_command :arm, partition: params['partition'], code: params['code'], pretty: params['pretty']
     end
 
     post '/disarm' do
-      run_command :disarm, partition: params['partition'], code: params['code']
+      run_command :disarm, partition: params['partition'], code: params['code'], pretty: params['pretty']
     end
 
     post '/key_press' do
-      run_command :key_press, key: params['keys']
+      run_command :key_press, key: params['keys'], pretty: params['pretty']
     end
 
     post '/acknowledge_trouble' do
-      run_command :acknowledge_trouble
+      run_command :acknowledge_trouble, pretty: params['pretty']
     end
 
     private
 
     def run_command(slug, **params)
-      if params == {}
-        JSON.pretty_generate(IT100SocketClient.instance.send(slug))
-      else
-        JSON.pretty_generate(IT100SocketClient.instance.send(slug, **params))
-      end
+      pretty = (params.delete(:pretty) || 'false').downcase == 'true'
+      result = if params.keys.empty?
+                 IT100SocketClient.instance.send(slug)
+               else
+                 IT100SocketClient.instance.send(slug, **params)
+               end
+      pretty ? JSON.pretty_generate(result) : result.to_json
     end
   end
 end
