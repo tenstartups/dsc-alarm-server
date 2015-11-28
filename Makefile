@@ -21,5 +21,5 @@ run: build
 	--name dsc-connect \
 	${DOCKER_IMAGE_NAME} ${ARGS}
 
-push: clean_build
+push: build
 	docker push ${DOCKER_IMAGE_NAME}:latest
