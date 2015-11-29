@@ -15,8 +15,8 @@ RUN \
 
 # Install gems.
 RUN \
-  gem install --no-ri --no-rdoc activesupport awesome_print colorize pry rest-client sinatra thin tzinfo-data && \
-  gem install nokogiri -- --use-system-libraries
+  gem install activesupport awesome_print colorize nokogiri pry \
+              rest-client sinatra thin tzinfo-data -- --use-system-libraries
 
 # Add files to the container.
 COPY lib /usr/local/lib
