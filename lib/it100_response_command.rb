@@ -1,3 +1,5 @@
+require 'yaml'
+
 module DSCConnect
   class IT100ResponseCommand < IT100Command
     RESPONSE_COMMANDS ||= YAML.load_file(File.join(File.dirname(__FILE__), 'it100_commands.yml'))['response']

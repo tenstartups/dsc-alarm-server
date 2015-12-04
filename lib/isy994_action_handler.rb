@@ -1,10 +1,8 @@
-require 'active_support'
-require 'active_support/core_ext'
 require 'rest-client'
 require 'singleton'
 
 module DSCConnect
-  class ISY994RestClient
+  class ISY994ActionHandler
     include Singleton
     include LoggingHelper
 
@@ -80,7 +78,9 @@ module DSCConnect
     def get(path)
       result = RestClient.get("#{isy994_uri}/rest/#{path}")
       Hash.from_xml(result)
-    rescue SocketError => e
+    rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
+           EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
+           Net::HTTPHeaderSyntaxError, Net::ProtocolError, RestClient::Unauthorized => e
       raise ActionError, e.message
     end
 
@@ -88,7 +88,7 @@ module DSCConnect
 
     def isy994_uri
       @isy994_uri ||= ENV['ISY994_URI'] if ENV['ISY994_URI'] && ENV['ISY994_URI'].length > 0
-      @isy994_uri ||= Configuration.instance.config['isy994_uri']
+      @isy994_uri ||= Configuration.instance.action_handlers.try(:isy994).try(:uri)
       @isy994_uri ||= 'http://admin:admin@isy994-ems'
     end
   end

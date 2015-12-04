@@ -8,6 +8,11 @@ FROM tenstartups/alpine-ruby:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
+# Set environment variables.
+ENV \
+  TERM=xterm-color \
+  RUBYLIB=/usr/local/lib/ruby
+
 # Install packages.
 RUN \
   apk --update add libxml2-dev libxslt-dev ruby-nokogiri zlib-dev && \
@@ -15,11 +20,11 @@ RUN \
 
 # Install gems.
 RUN \
-  gem install activesupport awesome_print colorize nokogiri pry \
+  gem install activesupport awesome_print colorize nokogiri pry recursive-open-struct \
               rest-client sinatra thin tzinfo-data -- --use-system-libraries
 
 # Add files to the container.
-COPY lib /usr/local/lib
+COPY lib ${RUBYLIB}
 COPY entrypoint.rb /docker-entrypoint
 
 # Set the entrypoint script.

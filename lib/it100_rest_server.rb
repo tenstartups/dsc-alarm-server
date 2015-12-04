@@ -1,5 +1,6 @@
 require 'json'
 require 'sinatra/base'
+require 'configuration'
 
 module DSCConnect
   class IT100RestServer
@@ -15,11 +16,11 @@ module DSCConnect
     end
 
     def bind_address
-      ENV['IT100_REST_SERVER_BIND_ADDRESS'] || '0.0.0.0'
+      Configuration.instance.rest_server.try(:bind_address) || '0.0.0.0'
     end
 
     def bind_port
-      ENV['IT100_REST_SERVER_PORT'] || 8080
+      Configuration.instance.rest_server.try(:bind_port) || 8080
     end
 
     private

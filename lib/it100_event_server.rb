@@ -7,14 +7,14 @@ module DSCConnect
 
     def initialize
       @process_threads = []
-      @extra_event_handlers = [IT100EventActionHandler]
+      @extra_event_handlers = [DefaultEventHandler]
       ENV.keys.grep(/^DSC_EVENT_HANDLER_([_A-Z0-9]+)/).map { |e| ENV[e] }.uniq
         .each { |h| @extra_event_handlers << ActiveSupport::Inflector.constantize(h) }
     end
 
     def start!
       # Start the logger loop
-      @process_threads << Logger.instance.tap(&:start!)
+      @process_threads << ConsoleLogger.instance.tap(&:start!)
 
       # Start the IT-100 event listener loop
       @process_threads << IT100SocketClient.instance.tap(&:start!)

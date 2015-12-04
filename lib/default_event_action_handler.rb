@@ -1,11 +1,11 @@
 module DSCConnect
   class ActionError < StandardError; end
 
-  class IT100EventActionHandler
+  class DefaultEventHandler
     include WorkerThreadBase
 
     def initialize
-      @action_handlers = (Configuration.instance.config['event_handlers'] || []).reduce({}) do |hash, (_slug, attrs)|
+      @action_handlers = (Configuration.instance.action_handlers.try(:to_h) || []).reduce({}) do |hash, (_slug, attrs)|
         attrs['actions'].each { |k, v| hash[k] = [ActiveSupport::Inflector.constantize(attrs['class_name']), v.to_sym] }
         hash
       end
@@ -17,7 +17,7 @@ module DSCConnect
 
     def do_work
       unless (event = IT100SocketClient.instance.next_event(@subscription_id)).nil?
-        event_action_defns = Configuration.instance.config['event_action_handler'].select do |ea_defn|
+        event_action_defns = (Configuration.instance.default_event_handler || []).select do |ea_defn|
           ea_defn['if'] && ea_defn['if'].all? { |e| e.any? { |k, v| event.send(k) == v } }
         end
         event_action_defns.map { |e| e['then'] }.each do |action_defns|

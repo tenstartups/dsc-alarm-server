@@ -115,8 +115,8 @@ module DSCConnect
 
     def it100_uri
       uri = ENV['IT100_URI'] if ENV['IT100_URI'] && ENV['IT100_URI'].length > 0
-      uri ||= Configuration.instance.config['it100_uri']
-      uri ||= 'tcp://localhost:3000'
+      uri ||= Configuration.instance.try(:it100).try(:uri)
+      uri ||= 'localhost:3000'
       uri = "tcp://#{uri}" unless uri =~ /^[A-Za-z]+:\/\//
       URI(uri)
     end

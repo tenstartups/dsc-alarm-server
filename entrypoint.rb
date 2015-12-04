@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
-
+require 'active_support'
+require 'active_support/core_ext'
 require 'awesome_print'
 require 'pry'
 
 # Require all library files
 %w( logging_helper it100_command worker_thread_base ).each do |file_name|
-  require "/usr/local/lib/#{file_name}.rb"
+  require "#{ENV['RUBYLIB']}/#{file_name}.rb"
 end
-Dir['/usr/local/lib/*.rb'].each { |f| load f }
+Dir[File.join(ENV['RUBYLIB'], '*.rb')].each { |f| load f }
 
 Thread.abort_on_exception = true
 $stdout.sync = true

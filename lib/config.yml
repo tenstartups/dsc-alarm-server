@@ -1,16 +1,21 @@
 ---
-it100_uri: tcp://192.168.0.9:6000
-isy994_uri: http://admin:admin@isy994-ems
+rest_server:
+  bind_address: 0.0.0.0
+  bind_port: 8080
 
-event_handlers:
-  default:
-    class_name: DSCConnect::ISY994RestClient
+it100:
+  uri: localhost:3000
+
+action_handlers:
+  isy994:
+    class_name: DSCConnect::ISY994ActionHandler
+    uri: http://admin:admin@isy994-ems
     actions:
       run_isy_program: run_program
       set_isy_integer_variable: set_integer
       set_isy_state_variable: set_state
 
-event_action_handler:
+default_event_handler:
   - if:
       - slug: zone_alarm
     then:

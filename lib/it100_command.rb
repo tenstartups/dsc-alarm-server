@@ -1,5 +1,3 @@
-require 'yaml'
-
 module DSCConnect
   class IT100Command
     attr_reader :command, :raw_data, :checksum, :slug, :name, :data

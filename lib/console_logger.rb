@@ -2,7 +2,7 @@ require 'colorize'
 require 'singleton'
 
 module DSCConnect
-  class Logger
+  class ConsoleLogger
     include Singleton
 
     def initialize

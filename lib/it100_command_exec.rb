@@ -28,7 +28,7 @@ module DSCConnect
       end.parse!
 
       # Start the logger loop
-      @process_threads << Logger.instance.tap(&:start!)
+      @process_threads << ConsoleLogger.instance.tap(&:start!)
 
       # Start the IT-100 event listener loop
       @process_threads << IT100SocketClient.instance.tap(&:start!)
