@@ -11,6 +11,10 @@ module DSCConnect
       @log_queue = Queue.new
     end
 
+    def log(source_id:, severity: :info, message:)
+      @log_queue.push source_id: source_id, severity: severity, message: message
+    end
+
     %i[ debug info warn error ].each do |severity|
       define_method :"log_#{severity}" do |source_id, message|
         log severity: severity.to_sym, source_id: source_id, message: message
@@ -50,10 +54,6 @@ module DSCConnect
     def log_prefix(source_id)
       log_color = (@log_colors[source_id] ||= next_available_color)
       "#{source_id.ljust(20)} | ".colorize(log_color)
-    end
-
-    def log(source_id:, severity: :info, message:)
-      @log_queue.push source_id: source_id, severity: severity, message: message
     end
 
     def log!(source_id:, severity: :info, message:)

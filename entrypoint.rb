@@ -8,7 +8,7 @@ require 'pry'
 %w( logging_helper it100_command worker_thread_base ).each do |file_name|
   require "#{ENV['RUBYLIB']}/#{file_name}.rb"
 end
-Dir[File.join(ENV['RUBYLIB'], '*.rb')].each { |f| load f }
+Dir[File.join(ENV['RUBYLIB'], '*.rb')].each { |f| require f }
 
 Thread.abort_on_exception = true
 $stdout.sync = true

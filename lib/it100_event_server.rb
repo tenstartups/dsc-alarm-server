@@ -1,9 +1,7 @@
-require 'timeout'
-
 module DSCConnect
   class IT100EventServer
+    include Singleton
     include LoggingHelper
-    include WorkerThreadBase
 
     def initialize
       @process_threads = []

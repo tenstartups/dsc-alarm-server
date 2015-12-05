@@ -5,6 +5,9 @@ module DSCConnect
         ConsoleLogger.instance.send(:"log_#{severity}", self.class.name.split('::').last, message)
       end
     end
-    alias_method :log, :info
+
+    def log(severity, message)
+      ConsoleLogger.instance.send(:"log", source_id: self.class.name.split('::').last, severity: severity, message: message)
+    end
   end
 end

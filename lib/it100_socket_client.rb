@@ -82,7 +82,7 @@ module DSCConnect
       socket_retry do
         while (line = socket_readline).length > 0
           event = IT100ResponseCommand.new(line)
-          log "Event received : #{event.as_json.to_json}"
+          info "Event received : #{event.as_json.to_json}"
           @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
         end
       end
@@ -140,7 +140,7 @@ module DSCConnect
     def send_command(command)
       result = { request: command.as_json }
       socket_retry(1) do
-        log "Sending command : #{command.as_json.to_json}"
+        info "Sending command : #{command.as_json.to_json}"
         subscribe_events do |sub_id|
           socket_writeline(command.message)
           loop do

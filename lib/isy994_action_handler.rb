@@ -47,9 +47,9 @@ module DSCConnect
         'runIf'
       end
       if (attr = programs.find { |a| a['name'] == name })
-        log "Running program #{name} [#{attr['id']}] #{command} command"
+        info "Running program #{name} [#{attr['id']}] #{command} command"
         result = get("programs/#{attr['id']}/#{cmd}")
-        log "REST response : #{result['RestResponse'].to_json}"
+        info "REST response : #{result['RestResponse'].to_json}"
       else
         warn "Missing program #{name}, NOT running command #{command}"
       end
@@ -57,9 +57,9 @@ module DSCConnect
 
     def set_integer(name:, value:)
       if (attr = integer_variables.find { |a| a['name'] == name })
-        log "Setting integer variable #{name} [#{attr['id']}] to #{value}"
+        info "Setting integer variable #{name} [#{attr['id']}] to #{value}"
         result = get("vars/set/1/#{attr['id']}/#{value}")
-        log "REST response : #{result['RestResponse'].to_json}"
+        info "REST response : #{result['RestResponse'].to_json}"
       else
         warn "Missing integer variable #{name}, NOT setting value to #{value}"
       end
@@ -67,9 +67,9 @@ module DSCConnect
 
     def set_state(name:, value:)
       if (attr = state_variables.find { |a| a['name'] == name })
-        log "Setting state variable #{name} [#{attr['id']}] to #{value}"
+        info "Setting state variable #{name} [#{attr['id']}] to #{value}"
         result = get("vars/set/2/#{attr['id']}/#{value}")
-        log "REST response : #{result['RestResponse'].to_json}"
+        info "REST response : #{result['RestResponse'].to_json}"
       else
         warn "Missing state variable #{name}, NOT setting value to #{value}"
       end

@@ -33,7 +33,7 @@ module DSCConnect
   end
 
   class SinatraApp < Sinatra::Base
-    set :server, :thin
+    set :server, :puma
 
     configure do
       set :environment, 'production'
