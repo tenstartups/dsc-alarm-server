@@ -18,7 +18,16 @@ module DSCConnect
       end
       config = YAML.load_file(ENV['DSC_CONNECT_CONFIG']) if ENV['DSC_CONNECT_CONFIG'] && File.exist?(ENV['DSC_CONNECT_CONFIG'])
       config ||= YAML.load_file(default_config)
-      super(RecursiveOpenStruct.new(config))
+      @config = RecursiveOpenStruct.new(config)
+      super(@config)
+    end
+
+    def method_missing(*_)
+      @config.send(*_) || nil
+    end
+
+    def respond_to_missing?(*_)
+      @config.send(*_) || true
     end
   end
 end

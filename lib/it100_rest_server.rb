@@ -46,7 +46,7 @@ module DSCConnect
 
     get '/start_check' do
       content_type :json
-      JSON.pretty_generate(status: 'ok')
+      { status: 'ok' }.to_json
     end
 
     get '/poll' do
