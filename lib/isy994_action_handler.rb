@@ -52,6 +52,7 @@ module DSCConnect
         info "REST response : #{result['RestResponse'].to_json}"
       else
         warn "Missing program #{name}, NOT running command #{command}"
+        @programs = nil
       end
     end
 
@@ -62,6 +63,7 @@ module DSCConnect
         info "REST response : #{result['RestResponse'].to_json}"
       else
         warn "Missing integer variable #{name}, NOT setting value to #{value}"
+        @integer_variables = nil
       end
     end
 
@@ -72,6 +74,7 @@ module DSCConnect
         info "REST response : #{result['RestResponse'].to_json}"
       else
         warn "Missing state variable #{name}, NOT setting value to #{value}"
+        @state_variables = nil
       end
     end
 
