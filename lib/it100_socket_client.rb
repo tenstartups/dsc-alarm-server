@@ -14,7 +14,7 @@ module DSCConnect
       @socket_mutex = Mutex.new
     end
 
-    %i[ poll status labels ].each do |method_name|
+    %i( poll status labels ).each do |method_name|
       define_method method_name do
         send_command IT100RequestCommand.new(method_name)
       end

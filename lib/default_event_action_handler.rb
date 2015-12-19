@@ -5,8 +5,8 @@ module DSCConnect
     include WorkerThreadBase
 
     def initialize
-      @action_handlers = (Configuration.instance.action_handlers.try(:to_h) || []).reduce({}) do |hash, (_slug, attrs)|
-        attrs['actions'].each { |k, v| hash[k] = [ActiveSupport::Inflector.constantize(attrs['class_name']), v.to_sym] }
+      @action_handlers = (Configuration.instance.action_handlers.try(:to_h) || {}).reduce({}) do |hash, (_slug, attrs)|
+        attrs[:actions].each { |k, v| hash[k] = [ActiveSupport::Inflector.constantize(attrs[:class_name]), v.to_sym] }
         hash
       end
     end
@@ -18,13 +18,13 @@ module DSCConnect
     def do_work
       unless (event = IT100SocketClient.instance.next_event(@subscription_id)).nil?
         event_action_defns = (Configuration.instance.default_event_handler || []).select do |ea_defn|
-          ea_defn['if'] && ea_defn['if'].all? { |e| e.any? { |k, v| event.send(k) == v } }
+          ea_defn['if'] && ea_defn['if'].all? { |e| e.any? { |k, v| event.send(k.to_sym) == v } }
         end
-        event_action_defns.map { |e| e['then'] }.each do |action_defns|
+        event_action_defns.map { |e| e['then'] || [] }.each do |action_defns|
           action_defns.each do |action_defn|
             action_defn.each do |(action, attrs)|
-              action_class = @action_handlers[action][0]
-              action_method = @action_handlers[action][1]
+              action_class = @action_handlers[action.to_sym][0]
+              action_method = @action_handlers[action.to_sym][1]
               action_retry(5) do
                 action_class.instance.send(action_method, **(attrs.symbolize_keys))
               end

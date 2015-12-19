@@ -35,7 +35,7 @@ module DSCConnect
 
     def run_program(name:, command: :if)
       command = command.to_s.downcase.to_sym
-      command = :if unless %i[ if then else ].include?(command)
+      command = :if unless %i( if then else ).include?(command)
       cmd = case command
       when :if
         'runIf'
