@@ -6,7 +6,8 @@ module DSCConnect
 
     def initialize
       @action_handlers = (Configuration.instance.action_handlers.try(:to_h) || {}).reduce({}) do |hash, (_slug, attrs)|
-        attrs[:actions].each { |k, v| hash[k] = [ActiveSupport::Inflector.constantize(attrs[:class_name]), v.to_sym] }
+        attrs = attrs.symbolize_keys
+        attrs[:actions].each { |k, v| hash[k.to_sym] = [ActiveSupport::Inflector.constantize(attrs[:class_name]), v.to_sym] }
         hash
       end
     end

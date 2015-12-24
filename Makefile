@@ -13,10 +13,8 @@ run: build
 	docker run -it --rm \
 	-p 8080:8080 \
 	-v /etc/localtime:/etc/localtime \
-	-v "${PWD}":/etc/dsc-connect \
+	-v "$(PWD)/test":/etc/dsc-connect \
 	-e VIRTUAL_HOST=dsc-connect.docker \
-	-e IT100_URI=${IT100_URI} \
-	-e ISY994_URI=${ISY994_URI} \
 	-e DSC_CONNECT_CONFIG=/etc/dsc-connect/config.yml \
 	--name dsc-connect \
 	${DOCKER_IMAGE_NAME} ${ARGS}
