@@ -10,7 +10,7 @@ module DSCConnect
     include Singleton
 
     def initialize
-      default_config = File.join(File.dirname(__FILE__), 'config.yml')
+      default_config = File.join(File.dirname(__FILE__), 'config_template.yml')
       if ENV['DSC_CONNECT_CONFIG'] && !File.exist?(ENV['DSC_CONNECT_CONFIG'])
         warn "Copying configuration template to #{ENV['DSC_CONNECT_CONFIG']}"
         FileUtils.mkdir_p(File.dirname(ENV['DSC_CONNECT_CONFIG']))
