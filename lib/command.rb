@@ -1,9 +1,9 @@
 module DSCConnect
-  class IT100Command
-    attr_reader :command, :raw_data, :checksum, :slug, :name, :data
+  class Command
+    attr_reader :code, :raw_data, :checksum, :command, :name, :data
 
     def message
-      "%3s%s%2s\r\n" % [command, raw_data, checksum]
+      "%3s%s%2s\r\n" % [code, raw_data, checksum]
     end
 
     def valid_checksum?
@@ -19,10 +19,10 @@ module DSCConnect
     end
 
     def as_json
-      if slug.nil?
-        { command: command, message: message }
+      if command.nil?
+        { code: code, message: message }
       else
-        { command: command, name: name }.merge(data)
+        { code: code, name: name }.merge(data)
       end
     end
 
@@ -33,7 +33,7 @@ module DSCConnect
     private
 
     def checksum_verify
-      ('%3s%s' % [command, raw_data]).bytes.inject(0) { |a, e| a + e }.to_s(16)[-2..-1].upcase
+      ('%3s%s' % [code, raw_data]).bytes.inject(0) { |a, e| a + e }.to_s(16)[-2..-1].upcase
     end
   end
 end

@@ -1,31 +1,38 @@
 module DSCConnect
   class ActionError < StandardError; end
 
-  class DefaultEventHandler
+  class EventActionHandler
     include WorkerThreadBase
 
     def initialize
-      @action_handlers = (Configuration.instance.action_handlers.try(:to_h) || {}).reduce({}) do |hash, (_slug, attrs)|
+      defns = Configuration.instance.action_handlers.try(:to_h) || {}
+      @action_handlers = defns.each_with_object({}) do |(slug, attrs), hash|
         attrs = attrs.symbolize_keys
-        attrs[:actions].each { |k, v| hash[k.to_sym] = [ActiveSupport::Inflector.constantize(attrs[:class_name]), v.to_sym] }
-        hash
+        attrs[:actions].each do |action|
+          hash[:"#{slug}_#{action}"] = {
+            class: ActiveSupport::Inflector.constantize(attrs[:class_name]),
+            method: action.to_sym
+          }
+        end
       end
     end
 
     def prepare_work
-      @subscription_id = IT100SocketClient.instance.subscribe_events
+      @subscription_id = SocketClient.instance.subscribe_events
     end
 
     def do_work
-      unless (event = IT100SocketClient.instance.next_event(@subscription_id)).nil?
-        event_action_defns = (Configuration.instance.default_event_handler || []).select do |ea_defn|
-          ea_defn['if'] && ea_defn['if'].all? { |e| e.any? { |k, v| event.send(k.to_sym) == v } }
+      unless (event = SocketClient.instance.next_event(@subscription_id)).nil?
+        matching_actions = (Configuration.instance.event_actions || []).select do |defn|
+          defn['conditions'] &&
+          defn['conditions'].all? { |e| e.any? { |k, v| event.send(k.to_sym) == v } }
         end
-        event_action_defns.map { |e| e['then'] || [] }.each do |action_defns|
-          action_defns.each do |action_defn|
-            action_defn.each do |(action, attrs)|
-              action_class = @action_handlers[action.to_sym][0]
-              action_method = @action_handlers[action.to_sym][1]
+        matching_actions.map { |e| e['actions'] || [] }.each do |defns|
+          defns.each do |defn|
+            defn.each do |(action, attrs)|
+              action_class = @action_handlers[action.to_sym].try(:[], :class)
+              action_method = @action_handlers[action.to_sym].try(:[], :method)
+              next unless action_class && action_method
               action_retry(5) do
                 action_class.instance.send(action_method, **(attrs.symbolize_keys))
               end
@@ -36,7 +43,7 @@ module DSCConnect
     end
 
     def cleanup_work
-      IT100SocketClient.instance.unsubscribe_events(@subscription_id)
+      SocketClient.instance.unsubscribe_events(@subscription_id)
     end
 
     private

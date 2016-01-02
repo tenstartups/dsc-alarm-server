@@ -1,0 +1,241 @@
+---
+rest_server:
+  bind_address: 0.0.0.0
+  bind_port: 8080
+
+it100:
+  uri: localhost:3000
+
+action_handlers:
+  ifttt:
+    class_name: DSCConnect::Action::IFTTT
+    maker_key: GET_A_KEY
+    actions:
+      - trigger_event
+  isy994:
+    class_name: DSCConnect::Action::ISY994
+    uri: http://admin:admin@isy994-ems
+    actions:
+      - run_program
+      - set_integer
+      - set_state
+  slack:
+    class_name: DSCConnect::Action::Slack
+    webhook_url: https://hooks.slack.com/services/GET/A/URL
+    actions:
+      - notify
+
+event_actions:
+  - conditions:
+      - command: zone_alarm
+    actions:
+      - isy994_set_state:
+          name: s_dsc_intrusion_alarm
+          value: 1
+  - conditions:
+      - command: zone_alarm_restore
+    actions:
+      - isy994_set_state:
+          name: s_dsc_intrusion_alarm
+          value: 0
+  - conditions:
+      - command: partition_armed
+      - mode: 0
+    actions:
+      - isy994_set_state:
+          name: s_dsc_system_ready
+          value: 0
+      - isy994_set_state:
+          name: s_dsc_armed_actions
+          value: 2
+  - conditions:
+      - command: partition_armed
+      - mode: 1
+    actions:
+      - isy994_set_state:
+          name: s_dsc_system_ready
+          value: 0
+      - isy994_set_state:
+          name: s_dsc_armed_actions
+          value: 3
+  - conditions:
+      - command: partition_disarmed
+    actions:
+      - isy994_set_state:
+          name: s_dsc_entry_delay
+          value: 0
+      - isy994_set_state:
+          name: s_dsc_armed_actions
+          value: 0
+  - conditions:
+      - command: partition_ready
+    actions:
+      - isy994_set_state:
+          name: s_dsc_system_ready
+          value: 1
+  - conditions:
+      - command: partition_not_ready
+    actions:
+      - isy994_set_state:
+          name: s_dsc_system_ready
+          value: 0
+  - conditions:
+      - command: exit_delay_in_progress
+    actions:
+      - isy994_set_state:
+          name: s_dsc_armed_actions
+          value: 1
+  - conditions:
+      - command: entry_delay_in_progress
+    actions:
+      - isy994_set_state:
+          name: s_dsc_entry_delay
+          value: 1
+  - conditions:
+      - command: touble_status
+    actions:
+      - isy994_set_state:
+          name: s_dsc_panel_trouble
+          value: 1
+  - conditions:
+      - command: touble_status_restore
+    actions:
+      - isy994_set_state:
+          name: s_dsc_panel_trouble
+          value: 0
+  - conditions:
+      - command: fire_trouble_alarm
+    actions:
+      - isy994_set_state:
+          name: s_dsc_fire_alarm
+          value: 1
+  - conditions:
+      - command: fire_trouble_alarm_restored
+    actions:
+      - isy994_set_state:
+          name: s_dsc_fire_alarm
+          value: 0
+  - conditions:
+      - command: key_alarm
+    actions:
+      - isy994_set_state:
+          name: s_dsc_panic_alarm
+          value: 1
+  - conditions:
+      - command: key_alarm_restored
+    actions:
+      - isy994_set_state:
+          name: s_dsc_panic_alarm
+          value: 0
+  - conditions:
+      - command: zone_open
+      - zone: 1
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_1
+          value: 1
+  - conditions:
+      - command: zone_open
+      - zone: 2
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_2
+          value: 1
+  - conditions:
+      - command: zone_open
+      - zone: 3
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_3
+          value: 1
+  - conditions:
+      - command: zone_open
+      - zone: 4
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_4
+          value: 1
+  - conditions:
+      - command: zone_open
+      - zone: 5
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_5
+          value: 1
+  - conditions:
+      - command: zone_open
+      - zone: 6
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_6
+          value: 1
+  - conditions:
+      - command: zone_open
+      - zone: 7
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_7
+          value: 1
+  - conditions:
+      - command: zone_open
+      - zone: 8
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_8
+          value: 1
+  - conditions:
+      - command: zone_restored
+      - zone: 1
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_1
+          value: 0
+  - conditions:
+      - command: zone_restored
+      - zone: 2
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_2
+          value: 0
+  - conditions:
+      - command: zone_restored
+      - zone: 3
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_3
+          value: 0
+  - conditions:
+      - command: zone_restored
+      - zone: 4
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_4
+          value: 0
+  - conditions:
+      - command: zone_restored
+      - zone: 5
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_5
+          value: 0
+  - conditions:
+      - command: zone_restored
+      - zone: 6
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_6
+          value: 0
+  - conditions:
+      - command: zone_restored
+      - zone: 7
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_7
+          value: 0
+  - conditions:
+      - command: zone_restored
+      - zone: 8
+    actions:
+      - isy994_set_state:
+          name: s_dsc_zone_8
+          value: 0

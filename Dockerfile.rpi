@@ -21,7 +21,7 @@ RUN \
 # Install gems.
 RUN \
   gem install activesupport awesome_print colorize nokogiri pry puma \
-              recursive-open-struct rest-client sinatra thin tzinfo-data \
+              recursive-open-struct rest-client sinatra slack-notifier thin tzinfo-data \
               -- --use-system-libraries
 
 # Add files to the container.

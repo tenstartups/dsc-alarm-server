@@ -3,7 +3,7 @@ require 'sinatra/base'
 require 'configuration'
 
 module DSCConnect
-  class IT100RestServer
+  class RestServer
     include WorkerThreadBase
 
     def do_work
@@ -37,8 +37,8 @@ module DSCConnect
 
     configure do
       set :environment, 'production'
-      set :bind, IT100RestServer.instance.bind_address
-      set :port, IT100RestServer.instance.bind_port
+      set :bind, RestServer.instance.bind_address
+      set :port, RestServer.instance.bind_port
       set :run, true
       set :threaded, false
       set :traps, false
@@ -101,12 +101,12 @@ module DSCConnect
 
     private
 
-    def run_command(slug, **params)
+    def run_command(command, **params)
       pretty = (params.delete(:pretty) || 'false').downcase == 'true'
       result = if params.keys.empty?
-                 IT100SocketClient.instance.send(slug)
+                 SocketClient.instance.send(command)
                else
-                 IT100SocketClient.instance.send(slug, **params)
+                 SocketClient.instance.send(command, **params)
                end
       pretty ? JSON.pretty_generate(result) : result.to_json
     end

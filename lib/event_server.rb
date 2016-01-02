@@ -1,13 +1,10 @@
 module DSCConnect
-  class IT100EventServer
+  class EventServer
     include Singleton
     include LoggingHelper
 
     def initialize
       @process_threads = []
-      @extra_event_handlers = [DefaultEventHandler]
-      ENV.keys.grep(/^DSC_EVENT_HANDLER_([_A-Z0-9]+)/).map { |e| ENV[e] }.uniq
-        .each { |h| @extra_event_handlers << ActiveSupport::Inflector.constantize(h) }
     end
 
     def start!
@@ -15,16 +12,16 @@ module DSCConnect
       @process_threads << ConsoleLogger.instance.tap(&:start!)
 
       # Start the IT-100 event listener loop
-      @process_threads << IT100SocketClient.instance.tap(&:start!)
+      @process_threads << SocketClient.instance.tap(&:start!)
 
-      # Start the event handler loops
-      @extra_event_handlers.each { |h| @process_threads << h.instance.tap(&:start!) }
+      # Start the event handler loop
+      @process_threads << EventActionHandler.instance.tap(&:start!)
 
       # Start the heatbeat poll loop
-      @process_threads << IT100HeartbeatPoll.instance.tap(&:start!)
+      @process_threads << HeartbeatPoll.instance.tap(&:start!)
 
       # Start the API REST server if requested
-      @process_threads << IT100RestServer.instance.tap(&:start!)
+      @process_threads << RestServer.instance.tap(&:start!)
 
       # Trap CTRL-C and SIGTERM
       trap('INT') do
@@ -41,7 +38,7 @@ module DSCConnect
       warn 'Press CTRL-C at any time to stop all threads and exit'
 
       # Trigger a full status dump
-      IT100SocketClient.instance.status
+      SocketClient.instance.status
 
       # Wait on threads
       @process_threads.each(&:wait!)

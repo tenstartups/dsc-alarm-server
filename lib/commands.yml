@@ -2,201 +2,201 @@
 request:
   poll:
     name: Poll
-    command: '000'
+    code: '000'
   status:
     name: Status Request
-    command: '001'
+    code: '001'
   labels:
     name: Labels Request
-    command: '002'
+    code: '002'
   set_datetime:
     name: Set Time and Date
-    command: '010'
+    code: '010'
     data_pattern: '%{datetime}'
   output_control:
     name: Command Output Control
-    command: '020'
+    code: '020'
     data_pattern: '%{partition}%{program}'
   arm_away:
     name: Partition Arm Control - Away
-    command: '030'
+    code: '030'
     data_pattern: '%{partition}'
   arm_stay:
     name: Partition Arm Control - Stay
-    command: '031'
+    code: '031'
     data_pattern: '%{partition}'
   arm_no_entry_delay:
     name: Partition Arm Control - Armed, No Entry Delay
-    command: '032'
+    code: '032'
     data_pattern: '%{partition}'
   arm:
     name: Partition Arm Control - With Code
-    command: '033'
+    code: '033'
     data_pattern: '%{partition}%{code}'
   disarm:
     name: Partition Disarm Control - With Code
-    command: '040'
+    code: '040'
     data_pattern: '%{partition}%{code}'
   timestamp_control:
     name: Time Stamp Control
-    command: '055'
+    code: '055'
     data_pattern: '%{on_off}'
   datetime_broadcast:
     name: Time/Date Broadcast Control
-    command: '056'
+    code: '056'
     data_pattern: '%{on_off}'
   key_press:
     name: Key Pressed (Virt)
-    command: '070'
+    code: '070'
     data_pattern: '%{key}'
   code_send:
     name: Code Send
-    command: '200'
+    code: '200'
     data_pattern: '%{code}'
 response:
   command_acknowledge:
     name: Command Acknowledge
-    command: '500'
+    code: '500'
     data_pattern: ^(?<command_sent>\d{3})$
   command_error:
     name: Command Error
-    command: '501'
+    code: '501'
   system_error:
     name: System Error
-    command: '502'
+    code: '502'
     data_pattern: ^(?<error_code>\d{3})$
   time_date_broadcast:
     name: Time/Date Broadcast
-    command: '550'
+    code: '550'
     data_pattern: ^(?<datetime>\d{10})$
   broadcast_labels:
     name: Broadcast Labels
-    command: '550'
+    code: '550'
     data_pattern: ^(?<label_code>\d{3})(?<label_text>.{32})$
   zone_alarm:
     name: Zone Alarm
-    command: '601'
+    code: '601'
     data_pattern: ^(?<partition>[1-8])(?<zone>\d{3})$
   zone_alarm_restore:
     name: Zone Alarm Restored
-    command: '602'
+    code: '602'
     data_pattern: ^(?<partition>[1-8])(?<zone>\d{3})$
   zone_open:
     name: Zone Open
-    command: '609'
+    code: '609'
     data_pattern: ^(?<zone>\d{3})$
   zone_restored:
     name: Zone Restored
-    command: '610'
+    code: '610'
     data_pattern: ^(?<zone>\d{3})$
   panic_alarm:
     name: Panic Alarm
-    command: '625'
+    code: '625'
   panic_alarm_restored:
     name: Panic Alarm Restored
-    command: '626'
+    code: '626'
   auxiliary_input_alarm:
     name: Partition Ready
-    command: '631'
+    code: '631'
   auxiliary_input_alarm_restored:
     name: Partition Ready
-    command: '632'
+    code: '632'
   partition_ready:
     name: Partition Ready
-    command: '650'
+    code: '650'
     data_pattern: ^(?<partition>[1-8])$
   partition_not_ready:
     name: Partition Not Ready
-    command: '651'
+    code: '651'
     data_pattern: ^(?<partition>[1-8])$
   partition_armed:
     name: Partition Armed - Descriptive Mode
-    command: '652'
+    code: '652'
     data_pattern: ^(?<partition>[1-8])(?<mode>[0-4])$
   partition_alarm:
     name: Partition in Alarm
-    command: '654'
+    code: '654'
     data_pattern: ^(?<partition>[1-8])$
   partition_disarmed:
     name: Partition Disarmed
-    command: '655'
+    code: '655'
     data_pattern: ^(?<partition>[1-8])$
   exit_delay_in_progress:
     name: Exit Delay in Progress
-    command: '656'
+    code: '656'
     data_pattern: ^(?<partition>[1-8])$
   entry_delay_in_progress:
     name: Entry Delay in Progress
-    command: '657'
+    code: '657'
     data_pattern: ^(?<partition>[1-8])$
   keypad_lockout:
     name: Keypad Lock-out
-    command: '658'
+    code: '658'
     data_pattern: ^(?<partition>[1-8])$
   command_output:
     name: Command Output in Progress
-    command: '660'
+    code: '660'
     data_pattern: ^(?<partition>[1-8])$
   partition_busy:
     name: Partition Busy
-    command: '673'
+    code: '673'
     data_pattern: ^(?<partition>[1-8])$
   user_closing:
     name: User Closing
-    command: '700'
+    code: '700'
     data_pattern: ^(?<partition>[1-8])(?<user_code>00[0-4][0-9])$
   user_closing:
     name: Special Closing
-    command: '701'
+    code: '701'
     data_pattern: ^(?<partition>[1-8])$
   touble_status:
     name: Trouble Status (LED ON)
-    command: '840'
+    code: '840'
     data_pattern: ^(?<partition>[1-8])$
   touble_status_restore:
     name: Trouble Status Restored (LED OFF)
-    command: '841'
+    code: '841'
     data_pattern: ^(?<partition>[1-8])$
   fire_trouble_alarm:
     name: Fire Trouble Alarm
-    command: '842'
+    code: '842'
   fire_trouble_alarm_restored:
     name: Fire Trouble Alarm Restored
-    command: '843'
+    code: '843'
   keybus_fault:
     name: Keybus Fault
-    command: '896'
+    code: '896'
   keybus_fault_restore:
     name: Keybus Fault Restore
-    command: '897'
+    code: '897'
   lcd_update:
     name: LCD Update
-    command: '901'
+    code: '901'
     data_pattern: ^(?<line_no>0|1)(?<column_no>(0[0-9])|(1[0-5]))(?<num_chars>(0[1-9])|(1[0-9])|(3[012]))(?<display_text>.+)$
   lcd_cursor:
     name: LCD Cursor
-    command: '902'
+    code: '902'
     data_pattern: ^(?<cursor_type>[012])(?<line_no>0|1)(?<column_no>(0[0-9])|(1[0-5]))$
   led_status:
     name: LED Status
-    command: '903'
+    code: '903'
     data_pattern: ^(?<led_no>[1-9])(?<status>[0-3])$
   beep_status:
     name: Beep Status
-    command: '904'
+    code: '904'
     data_pattern: ^(?<beeps>([01][0-9]{2})|(2[0-4][0-9])|(25[0-5]))$
   tone_status:
     name: Tone Status
-    command: '905'
+    code: '905'
     data_pattern: ^(?<constant_tone_control>[01])(?<number_of_beeps>[0-7])(?<interval>(0[0-9])|(1[0-5]))$
   buzzer_status:
     name: Buzzer Status
-    command: '906'
+    code: '906'
     data_pattern: ^(?<duration>([01][0-9]{2})|(2[0-4][0-9])|(25[0-5]))$
   door_chime_status:
     name: Door Chime Status
-    command: '907'
+    code: '907'
   software_version:
     name: Software Version
-    command: '908'
+    code: '908'
     data_pattern: ^(?<version>\d{6})$

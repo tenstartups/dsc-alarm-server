@@ -2,7 +2,7 @@ require 'optparse'
 require 'singleton'
 
 module DSCConnect
-  class IT100CommandExec
+  class CommandExec
     include Singleton
 
     def initialize
@@ -31,13 +31,13 @@ module DSCConnect
       @process_threads << ConsoleLogger.instance.tap(&:start!)
 
       # Start the IT-100 event listener loop
-      @process_threads << IT100SocketClient.instance.tap(&:start!)
+      @process_threads << SocketClient.instance.tap(&:start!)
 
       # Execute the command
       if options.size > 0
-        IT100SocketClient.instance.send(ARGV[0], **options)
+        SocketClient.instance.send(command, **options)
       else
-        IT100SocketClient.instance.send(ARGV[0])
+        SocketClient.instance.send(command)
       end
 
       # Exit threads
