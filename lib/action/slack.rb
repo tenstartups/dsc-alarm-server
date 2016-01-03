@@ -16,7 +16,7 @@ module DSCConnect
         attachment.merge! text: message if message
         attachment.merge! color: color if color
         params.merge! attachments: [attachment]
-        response = notifier.ping(message, params)
+        response = notifier.ping(nil, params)
         info "Response : #{response.body}"
       rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
              EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
