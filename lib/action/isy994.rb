@@ -1,12 +1,8 @@
 require 'rest-client'
-require 'singleton'
 
 module DSCConnect
   module Action
-    class ISY994
-      include Singleton
-      include LoggingHelper
-
+    class ISY994 < Base
       def check_programs(action_progs)
         missing_progs = action_progs - programs.map { |e| e['name'] }
         missing_progs.each { |n| warn "Missing program : #{n}" }

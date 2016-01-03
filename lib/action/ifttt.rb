@@ -1,12 +1,8 @@
 require 'rest-client'
-require 'singleton'
 
 module DSCConnect
   module Action
-    class IFTTT
-      include Singleton
-      include LoggingHelper
-
+    class IFTTT < Base
       def maker_event(event:, **args)
         response = RestClient.post(
           event_uri(event),

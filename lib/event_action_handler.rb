@@ -23,6 +23,7 @@ module DSCConnect
 
     def do_work
       unless (event = SocketClient.instance.next_event(@subscription_id)).nil?
+        Thread.current.thread_variable_set(:event, event)
         matching_actions = (Configuration.instance.event_actions || []).select do |defn|
           defn['conditions'] &&
           defn['conditions'].all? { |e| e.any? { |k, v| event.send(k.to_sym) == v } }

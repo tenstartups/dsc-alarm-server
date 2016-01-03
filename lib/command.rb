@@ -1,9 +1,13 @@
 module DSCConnect
   class Command
-    attr_reader :code, :raw_data, :checksum, :command, :name, :data
+    attr_reader :code, :raw_data, :checksum, :command, :name, :data, :timestamp
+
+    def initialize
+      @timestamp = Time.now
+    end
 
     def message
-      "%3s%s%2s\r\n" % [code, raw_data, checksum]
+      format("%3s%s%2s\r\n", code, raw_data, checksum)
     end
 
     def valid_checksum?
@@ -33,7 +37,7 @@ module DSCConnect
     private
 
     def checksum_verify
-      ('%3s%s' % [code, raw_data]).bytes.inject(0) { |a, e| a + e }.to_s(16)[-2..-1].upcase
+      (format('%3s%s', code, raw_data)).bytes.inject(0) { |a, e| a + e }.to_s(16)[-2..-1].upcase
     end
   end
 end

@@ -2,7 +2,6 @@ require 'singleton'
 
 module DSCConnect
   module WorkerThreadBase
-
     def self.included(base)
       base.class_eval do
         include Singleton

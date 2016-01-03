@@ -46,14 +46,14 @@ module DSCConnect
       partition = 1 if partition.nil? || partition.length == 0
       send_command RequestCommand.new(__method__,
                                       partition: partition,
-                                      code: ('%-6s' % code)[0..5].tr(' ', '0'))
+                                      code: (format('%-6s', code))[0..5].tr(' ', '0'))
     end
 
     def disarm(partition: nil, code:)
       partition = 1 if partition.nil? || partition.length == 0
       send_command RequestCommand.new(__method__,
                                       partition: partition,
-                                      code: ('%-6s' % code)[0..5].tr(' ', '0'))
+                                      code: (format('%-6s', code))[0..5].tr(' ', '0'))
     end
 
     def timestamp_control(on: false)
@@ -66,7 +66,7 @@ module DSCConnect
 
     def code_send(code:)
       send_command RequestCommand.new(__method__,
-                                      code: ('%-6s' % code)[0..5].tr(' ', '0'))
+                                      code: (format('%-6s', code))[0..5].tr(' ', '0'))
     end
 
     def key_press(keys:)

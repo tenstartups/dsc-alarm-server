@@ -1,19 +1,15 @@
 require 'slack-notifier'
-require 'singleton'
 
 module DSCConnect
   module Action
-    class Slack
-      include Singleton
-      include LoggingHelper
-
+    class Slack < Base
       def notify(username: 'DSC Event', icon_url: nil, title:, message: nil, color: nil)
         notifier = ::Slack::Notifier.new(webhook_url, username: username)
         params = {}
         params.merge! icon_url: icon_url if icon_url
         attachment = {}
         attachment.merge! fallback: message || title, title: title
-        attachment.merge! text: message if message
+        attachment.merge! text: interpolate_message(message) if message
         attachment.merge! color: color if color
         params.merge! attachments: [attachment]
         response = notifier.ping(nil, params)
@@ -25,6 +21,10 @@ module DSCConnect
       end
 
       private
+
+      def interpolate_message(message)
+        message.gsub('%{occurred_at}', source_event.timestamp.strftime('%B %-d, %Y at %I:%M:%S%p'))
+      end
 
       def webhook_url
         Configuration.instance.action_handlers.try(:slack).try(:webhook_url)

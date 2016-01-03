@@ -5,7 +5,7 @@ require 'awesome_print'
 require 'pry'
 
 # Require all library files
-%w( logging_helper command worker_thread_base ).each do |file_name|
+%w( logging_helper command worker_thread_base action/base ).each do |file_name|
   require "#{ENV['RUBYLIB']}/#{file_name}.rb"
 end
 Dir[File.join(ENV['RUBYLIB'], '**/*.rb')].each { |f| require f }
