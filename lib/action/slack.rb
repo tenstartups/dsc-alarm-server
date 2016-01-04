@@ -17,7 +17,7 @@ module DSCConnect
       rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
              EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
              Net::HTTPHeaderSyntaxError, Net::ProtocolError, RestClient::Unauthorized => e
-        raise ActionError, e.message
+        raise Error, e.message
       end
 
       private
@@ -27,7 +27,7 @@ module DSCConnect
       end
 
       def webhook_url
-        Configuration.instance.action_handlers.try(:slack).try(:webhook_url)
+        config[:webhook_url]
       end
     end
   end

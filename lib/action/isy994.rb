@@ -81,14 +81,14 @@ module DSCConnect
       rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
              EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
              Net::HTTPHeaderSyntaxError, Net::ProtocolError, RestClient::Unauthorized => e
-        raise ActionError, e.message
+        raise Error, e.message
       end
 
       private
 
       def isy994_uri
         @isy994_uri ||= ENV['ISY994_URI'] if ENV['ISY994_URI'] && ENV['ISY994_URI'].length > 0
-        @isy994_uri ||= Configuration.instance.action_handlers.try(:isy994).try(:uri)
+        @isy994_uri ||= config[:uri]
         @isy994_uri ||= 'http://admin:admin@isy994-ems'
       end
     end

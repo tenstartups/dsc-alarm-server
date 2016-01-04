@@ -9,21 +9,24 @@ it100:
 action_handlers:
   ifttt:
     class_name: DSCConnect::Action::IFTTT
-    maker_key: GET_A_KEY
     actions:
       - trigger_event
+    config:
+      maker_key: GET_A_KEY
   isy994:
     class_name: DSCConnect::Action::ISY994
-    uri: http://admin:admin@isy994-ems
     actions:
       - run_program
       - set_integer
       - set_state
+    config:
+      uri: http://admin:admin@isy994-ems
   slack:
     class_name: DSCConnect::Action::Slack
-    webhook_url: https://hooks.slack.com/services/GET/A/URL
     actions:
       - notify
+    config:
+      webhook_url: https://hooks.slack.com/services/GET/A/URL
 
 event_actions:
   - conditions:

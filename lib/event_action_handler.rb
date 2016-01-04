@@ -1,6 +1,4 @@
 module DSCConnect
-  class ActionError < StandardError; end
-
   class EventActionHandler
     include WorkerThreadBase
 
@@ -8,9 +6,11 @@ module DSCConnect
       defns = Configuration.instance.action_handlers.try(:to_h) || {}
       @action_handlers = defns.each_with_object({}) do |(slug, attrs), hash|
         attrs = attrs.symbolize_keys
+        action_handler = ActiveSupport::Inflector.constantize(attrs[:class_name])
+        action_handler.instance.config = attrs[:config]
         attrs[:actions].each do |action|
           hash[:"#{slug}_#{action}"] = {
-            class: ActiveSupport::Inflector.constantize(attrs[:class_name]),
+            class: action_handler,
             method: action.to_sym
           }
         end
@@ -60,7 +60,7 @@ module DSCConnect
         begin
           result = block.call(num_failures)
           break # success
-        rescue ActionError => e
+        rescue DSCConnect::Action::Error => e
           error "Action failure : #{e.message}"
           break if max_num_retries && num_failures >= max_num_retries
           num_failures += 1

@@ -14,7 +14,7 @@ module DSCConnect
       rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
              EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
              Net::HTTPHeaderSyntaxError, Net::ProtocolError, RestClient::Unauthorized => e
-        raise ActionError, e.message
+        raise Error, e.message
       end
 
       private
@@ -24,7 +24,7 @@ module DSCConnect
       end
 
       def maker_key
-        Configuration.instance.action_handlers.try(:ifttt).try(:maker_key)
+        config[:maker_key]
       end
     end
   end
