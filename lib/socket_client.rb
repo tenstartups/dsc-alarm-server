@@ -127,7 +127,7 @@ module DSCConnect
       with_socket { |s| s.readline_nonblock(timeout: 0.5, line_end: "\r\n") }
     rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
            EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
-           Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+           Net::HTTPHeaderSyntaxError, Net::ProtocolError, ArgumentError => e
       raise SocketError, e.message
     end
 
@@ -135,7 +135,7 @@ module DSCConnect
       with_socket { |s| s.write(line) }
     rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
            EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
-           Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+           Net::HTTPHeaderSyntaxError, Net::ProtocolError, ArgumentError => e
       raise SocketError, e.message
     end
 

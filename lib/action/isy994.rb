@@ -80,7 +80,8 @@ module DSCConnect
         Hash.from_xml(result)
       rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
              EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
-             Net::HTTPHeaderSyntaxError, Net::ProtocolError, RestClient::Unauthorized => e
+             Net::HTTPHeaderSyntaxError, Net::ProtocolError, RestClient::Unauthorized,
+             SocketError => e
         raise Error, e.message
       end
 
