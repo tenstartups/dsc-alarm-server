@@ -149,11 +149,11 @@ response:
     name: Special Closing
     code: '701'
     data_pattern: ^(?<partition>[1-8])$
-  touble_status:
+  trouble_status:
     name: Trouble Status (LED ON)
     code: '840'
     data_pattern: ^(?<partition>[1-8])$
-  touble_status_restore:
+  trouble_status_restore:
     name: Trouble Status Restored (LED OFF)
     code: '841'
     data_pattern: ^(?<partition>[1-8])$

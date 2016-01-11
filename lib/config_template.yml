@@ -95,13 +95,13 @@ event_actions:
           name: s_dsc_entry_delay
           value: 1
   - conditions:
-      - command: touble_status
+      - command: trouble_status
     actions:
       - isy994_set_state:
           name: s_dsc_panel_trouble
           value: 1
   - conditions:
-      - command: touble_status_restore
+      - command: trouble_status_restore
     actions:
       - isy994_set_state:
           name: s_dsc_panel_trouble
