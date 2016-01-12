@@ -144,10 +144,22 @@ response:
   user_closing:
     name: User Closing
     code: '700'
-    data_pattern: ^(?<partition>[1-8])(?<user_code>00[0-4][0-9])$
-  user_closing:
+    data_pattern: ^(?<partition>[1-8])(?<user_code>00((0[1-9])|([1-3][0-9])|(4[012])))$
+  special_closing:
     name: Special Closing
     code: '701'
+    data_pattern: ^(?<partition>[1-8])$
+  partial_closing:
+    name: Partial Closing
+    code: '702'
+    data_pattern: ^(?<partition>[1-8])$
+  user_opening:
+    name: User Opening
+    code: '750'
+    data_pattern: ^(?<partition>[1-8])(?<user_code>00((0[1-9])|([1-3][0-9])|(4[012])))$
+  special_opening:
+    name: Special Opening
+    code: '751'
     data_pattern: ^(?<partition>[1-8])$
   trouble_status:
     name: Trouble Status (LED ON)
