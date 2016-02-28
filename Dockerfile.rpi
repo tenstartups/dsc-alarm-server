@@ -4,25 +4,27 @@
 # http://github.com/tenstartups/dsc-alarm-connect-docker
 #
 
-FROM tenstartups/rpi-alpine-ruby:latest
+FROM tenstartups/rpi-alpine:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
 # Set environment variables.
 ENV \
-  TERM=xterm-color \
   RUBYLIB=/usr/local/lib/ruby
 
 # Install packages.
 RUN \
-  apk --update add libxml2-dev libxslt-dev ruby-nokogiri zlib-dev && \
+  apk --update add build-base libxml2-dev libxslt-dev ruby \
+               ruby-bigdecimal ruby-bundler ruby-dev ruby-irb ruby-io-console \
+               ruby-json ruby-nokogiri zlib-dev && \
   rm -rf /var/cache/apk/*
 
 # Install gems.
 RUN \
-  gem install activesupport awesome_print colorize nokogiri pry puma \
-              recursive-open-struct rest-client sinatra slack-notifier thin tzinfo-data \
-              -- --use-system-libraries
+  gem install \
+    activesupport awesome_print colorize nokogiri pry puma \
+    recursive-open-struct rest-client sinatra slack-notifier tzinfo-data \
+      --no-document -- --use-system-libraries
 
 # Add files to the container.
 COPY lib ${RUBYLIB}
