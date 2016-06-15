@@ -24,7 +24,7 @@ RUN \
   gem install \
     activesupport awesome_print colorize nokogiri pry puma \
     recursive-open-struct rest-client sinatra slack-notifier tzinfo-data \
-      --no-document -- --use-system-libraries
+      --no-document
 
 # Add files to the container.
 COPY lib ${RUBYLIB}
