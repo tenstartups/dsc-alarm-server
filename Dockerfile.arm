@@ -4,7 +4,7 @@
 # http://github.com/tenstartups/dsc-alarm-connect-docker
 #
 
-FROM tenstartups/rpi-alpine:latest
+FROM tenstartups/alpine:arm
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 

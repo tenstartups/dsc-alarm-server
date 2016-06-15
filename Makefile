@@ -1,6 +1,7 @@
-DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect
-ifeq ($(DOCKER_ARCH),rpi)
-	DOCKER_IMAGE_NAME := $(subst /,/$(DOCKER_ARCH)-,$(DOCKER_IMAGE_NAME))
+ifeq ($(DOCKER_ARCH),arm)
+	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect:arm
+else
+	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect:latest
 endif
 
 build: Dockerfile.$(DOCKER_ARCH)
@@ -17,7 +18,7 @@ run: build
 	-e VIRTUAL_HOST=dsc-connect.docker \
 	-e DSC_CONNECT_CONFIG=/etc/dsc-connect/config.yml \
 	--name dsc-connect \
-	${DOCKER_IMAGE_NAME} ${ARGS}
+	$(DOCKER_IMAGE_NAME) $(ARGS)
 
 push: build
-	docker push ${DOCKER_IMAGE_NAME}:latest
+	docker push $(DOCKER_IMAGE_NAME)
