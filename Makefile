@@ -1,5 +1,5 @@
-ifeq ($(DOCKER_ARCH),arm)
-	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect:arm
+ifeq ($(DOCKER_ARCH),armhf)
+	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect:armhf
 else
 	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect:latest
 endif

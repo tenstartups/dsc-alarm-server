@@ -4,7 +4,7 @@
 # http://github.com/tenstartups/dsc-alarm-connect-docker
 #
 
-FROM tenstartups/alpine:arm
+FROM tenstartups/alpine:armhf
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
