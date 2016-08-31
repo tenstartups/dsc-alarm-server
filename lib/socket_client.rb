@@ -147,7 +147,7 @@ module DSCConnect
           socket_writeline(command.message)
           loop do
             begin
-              timeout(2) do
+              Timeout.timeout(2) do
                 sleep 0.01 while (event = SocketClient.instance.next_event(sub_id)).nil?
                 (result[:response] ||= []) << event.as_json
               end

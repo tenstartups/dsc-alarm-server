@@ -21,13 +21,5 @@ module DSCConnect
       @config = RecursiveOpenStruct.new(config)
       super(@config)
     end
-
-    def method_missing(*_)
-      @config.send(*_) || nil
-    end
-
-    def respond_to_missing?(*_)
-      @config.send(*_) || true
-    end
   end
 end

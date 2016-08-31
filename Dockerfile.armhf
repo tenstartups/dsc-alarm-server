@@ -16,7 +16,7 @@ ENV \
 RUN \
   apk --update add build-base libxml2-dev libxslt-dev ruby \
                ruby-bigdecimal ruby-bundler ruby-dev ruby-irb ruby-io-console \
-               ruby-json ruby-nokogiri zlib-dev && \
+               ruby-json zlib-dev && \
   rm -rf /var/cache/apk/*
 
 # Install gems.

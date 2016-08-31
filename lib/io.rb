@@ -5,7 +5,7 @@ class IO
   def readline_nonblock(timeout: 1, line_end: "\n")
     StringIO.new.tap do |buffer|
       begin
-        timeout(timeout) do
+        Timeout.timeout(timeout) do
           while (ch = recv(1))
             buffer << ch
             break if buffer.string.ends_with?(line_end)
