@@ -8,7 +8,7 @@ module DSCConnect
       super()
       @command = command.to_s
       @data = data
-      fail "Unknown command [#{@command}]" unless REQUEST_COMMANDS[@command]
+      raise "Unknown command [#{@command}]" unless REQUEST_COMMANDS[@command]
       @name = REQUEST_COMMANDS[@command]['name']
       @code = REQUEST_COMMANDS[@command]['code']
       @raw_data = format((REQUEST_COMMANDS[@command]['data_pattern'] || ''), @data)

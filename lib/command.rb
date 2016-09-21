@@ -37,7 +37,7 @@ module DSCConnect
     private
 
     def checksum_verify
-      (format('%3s%s', code, raw_data)).bytes.inject(0) { |a, e| a + e }.to_s(16)[-2..-1].upcase
+      format('%3s%s', code, raw_data).bytes.inject(0) { |a, e| a + e }.to_s(16)[-2..-1].upcase
     end
   end
 end

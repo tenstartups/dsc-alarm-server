@@ -34,15 +34,15 @@ module DSCConnect
         command = command.to_s.downcase.to_sym
         command = :if unless %i( if then else ).include?(command)
         cmd = case command
-        when :if
-          'runIf'
-        when :then
-          'runThen'
-        when :else
-          'runElse'
-        else
-          'runIf'
-        end
+              when :if
+                'runIf'
+              when :then
+                'runThen'
+              when :else
+                'runElse'
+              else
+                'runIf'
+              end
         if (attr = programs.find { |a| a['name'] == name })
           info "Running program #{name} [#{attr['id']}] #{command} command"
           result = get("programs/#{attr['id']}/#{cmd}")

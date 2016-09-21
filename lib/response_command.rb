@@ -11,7 +11,7 @@ module DSCConnect
       @checksum = (message.strip[-2..-1] || '').upcase
       RESPONSE_COMMANDS.each do |command, attr|
         next unless attr['code'] == code
-        next unless raw_data.length == 0 &&
+        next unless raw_data.length.zero? &&
                     attr['data_pattern'].nil? ||
                     (match = Regexp.new(attr['data_pattern'] || '').match(raw_data))
         @command = command

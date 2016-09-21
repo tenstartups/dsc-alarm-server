@@ -34,7 +34,7 @@ module DSCConnect
     end
 
     def do_work
-      fail 'You need to implement a concrete do_work method'
+      raise 'You need to implement a concrete do_work method'
     end
 
     def wait!

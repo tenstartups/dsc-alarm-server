@@ -102,7 +102,7 @@ module DSCConnect
     private
 
     def run_command(command, **params)
-      pretty = (params.delete(:pretty) || 'false').downcase == 'true'
+      pretty = (params.delete(:pretty) || 'false').casecmp('true').zero?
       result = if params.keys.empty?
                  SocketClient.instance.send(command)
                else

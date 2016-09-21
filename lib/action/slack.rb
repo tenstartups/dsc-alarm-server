@@ -6,12 +6,13 @@ module DSCConnect
       def notify(username: 'DSC Event', icon_url: nil, title:, message: nil, color: nil)
         notifier = ::Slack::Notifier.new(webhook_url, username: username)
         params = {}
-        params.merge! icon_url: icon_url if icon_url
+        params[:icon_url] = icon_url if icon_url
         attachment = {}
-        attachment.merge! fallback: message || title, title: title
-        attachment.merge! text: interpolate_message(message) if message
-        attachment.merge! color: color if color
-        params.merge! attachments: [attachment]
+        attachment[:fallback] = message || title
+        attachment[:title] = title
+        attachment[:text] = interpolate_message(message) if message
+        attachment[:color] = color if color
+        params[:attachments] = [attachment]
         response = notifier.ping(nil, params)
         info "Response : #{response.body}"
       rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,

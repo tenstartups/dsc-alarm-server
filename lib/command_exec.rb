@@ -34,7 +34,7 @@ module DSCConnect
       @process_threads << SocketClient.instance.tap(&:start!)
 
       # Execute the command
-      if options.size > 0
+      if options.size.positive?
         SocketClient.instance.send(command, **options)
       else
         SocketClient.instance.send(command)

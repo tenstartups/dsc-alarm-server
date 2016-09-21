@@ -26,7 +26,7 @@ module DSCConnect
         Thread.current.thread_variable_set(:event, event)
         matching_actions = (Configuration.instance.event_actions || []).select do |defn|
           defn['conditions'] &&
-          defn['conditions'].all? { |e| e.any? { |k, v| event.send(k.to_sym) == v } }
+            defn['conditions'].all? { |e| e.any? { |k, v| event.send(k.to_sym) == v } }
         end
         matching_actions.map { |e| e['actions'] || [] }.each do |defns|
           defns.each do |defn|
@@ -35,7 +35,7 @@ module DSCConnect
               action_method = @action_handlers[action.to_sym].try(:[], :method)
               next unless action_class && action_method
               action_retry(5) do
-                action_class.instance.send(action_method, **(attrs.symbolize_keys))
+                action_class.instance.send(action_method, **attrs.symbolize_keys)
               end
             end
           end
@@ -49,7 +49,7 @@ module DSCConnect
 
     private
 
-    def action_retry(max_num_retries, &block)
+    def action_retry(max_num_retries)
       result = nil
       num_failures = 0
       next_retry_at = Time.now.to_i
@@ -58,7 +58,7 @@ module DSCConnect
         break if quit_thread?
         next unless Time.now.to_i >= next_retry_at
         begin
-          result = block.call(num_failures)
+          result = yield num_failures
           break # success
         rescue DSCConnect::Action::Error => e
           error "Action failure : #{e.message}"

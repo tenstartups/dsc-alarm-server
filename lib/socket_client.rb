@@ -14,46 +14,46 @@ module DSCConnect
       @socket_mutex = Mutex.new
     end
 
-    %i( poll status labels ).each do |method_name|
+    %i(poll status labels).each do |method_name|
       define_method method_name do
         send_command RequestCommand.new(method_name)
       end
     end
 
     def set_datetime(datetime: nil)
-      datetime = Time.now if datetime.nil? || datetime.length == 0
+      datetime = Time.now if datetime.nil? || datetime.length.zero?
       send_command RequestCommand.new(__method__,
                                       datetime: datetime.strftime('%H%M%m%d%y'))
     end
 
     def output_control(partition: nil, program: nil)
-      partition = 1 if partition.nil? || partition.length == 0
-      program = 1 if program.nil? || program.length == 0
+      partition = 1 if partition.nil? || partition.length.zero?
+      program = 1 if program.nil? || program.length.zero?
       send_command RequestCommand.new(__method__, partition: partition, program: program)
     end
 
     def arm_away(partition: nil, no_entry_delay: false)
-      partition = 1 if partition.nil? || partition.length == 0
+      partition = 1 if partition.nil? || partition.length.zero?
       send_command RequestCommand.new(__method__, partition: partition)
     end
 
     def arm_stay(partition: nil)
-      partition = 1 if partition.nil? || partition.length == 0
+      partition = 1 if partition.nil? || partition.length.zero?
       send_command RequestCommand.new(__method__, partition: partition)
     end
 
     def arm(partition: nil, code:)
-      partition = 1 if partition.nil? || partition.length == 0
+      partition = 1 if partition.nil? || partition.length.zero?
       send_command RequestCommand.new(__method__,
                                       partition: partition,
-                                      code: (format('%-6s', code))[0..5].tr(' ', '0'))
+                                      code: format('%-6s', code)[0..5].tr(' ', '0'))
     end
 
     def disarm(partition: nil, code:)
-      partition = 1 if partition.nil? || partition.length == 0
+      partition = 1 if partition.nil? || partition.length.zero?
       send_command RequestCommand.new(__method__,
                                       partition: partition,
-                                      code: (format('%-6s', code))[0..5].tr(' ', '0'))
+                                      code: format('%-6s', code)[0..5].tr(' ', '0'))
     end
 
     def timestamp_control(on: false)
@@ -66,7 +66,7 @@ module DSCConnect
 
     def code_send(code:)
       send_command RequestCommand.new(__method__,
-                                      code: (format('%-6s', code))[0..5].tr(' ', '0'))
+                                      code: format('%-6s', code)[0..5].tr(' ', '0'))
     end
 
     def key_press(keys:)
@@ -82,7 +82,7 @@ module DSCConnect
 
     def do_work
       socket_retry do
-        while (line = socket_readline).length > 0
+        while (line = socket_readline).length.positive?
           event = ResponseCommand.new(line)
           info "Event received : #{event.as_json.to_json}"
           @subscribers.values.each { |q| q.push(event) } if event.valid_checksum?
@@ -90,12 +90,12 @@ module DSCConnect
       end
     end
 
-    def subscribe_events(&block)
+    def subscribe_events
       id = SecureRandom.hex
       @subscribers[id] = Queue.new
       if block_given?
         begin
-          block.call(id)
+          yield id
         ensure
           unsubscribe_events(id)
         end
@@ -110,13 +110,13 @@ module DSCConnect
     end
 
     def next_event(id)
-      @subscribers[id].pop if @subscribers[id].length > 0
+      @subscribers[id].pop if @subscribers[id].length.positive?
     end
 
     private
 
     def it100_uri
-      uri = ENV['_URI'] if ENV['_URI'] && ENV['_URI'].length > 0
+      uri = ENV['_URI'] if ENV['_URI'] && ENV['_URI'].length.positive?
       uri ||= Configuration.instance.try(:it100).try(:uri)
       uri ||= 'localhost:3000'
       uri = "tcp://#{uri}" unless uri =~ %r{^[A-Za-z]+://}
@@ -161,7 +161,7 @@ module DSCConnect
       result
     end
 
-    def socket_retry(max_num_retries = nil, &block)
+    def socket_retry(max_num_retries = nil)
       result = nil
       num_failures = 0
       next_retry_at = Time.now.to_i
@@ -170,7 +170,7 @@ module DSCConnect
         break if quit_thread?
         next unless Time.now.to_i >= next_retry_at
         begin
-          result = block.call(num_failures)
+          result = yield num_failures
           break # success
         rescue SocketError => e
           error "Socket failure : #{e.message}"
@@ -197,13 +197,13 @@ module DSCConnect
       end
     end
 
-    def with_socket(&block)
+    def with_socket
       @socket_mutex.synchronize do
         if @it100_socket.nil?
           debug "Opening socket at #{it100_uri}"
           @it100_socket = TCPSocket.open(it100_uri.host, it100_uri.port)
         end
-        block.call(@it100_socket)
+        yield @it100_socket
       end
     end
   end
