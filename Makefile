@@ -1,7 +1,8 @@
 ifeq ($(DOCKER_ARCH),armhf)
-	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect:armhf
+	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-server:armhf
 else
-	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-connect:latest
+	DOCKER_ARCH := x64
+	DOCKER_IMAGE_NAME := tenstartups/dsc-alarm-server:latest
 endif
 
 build: Dockerfile.$(DOCKER_ARCH)
@@ -14,10 +15,10 @@ run: build
 	docker run -it --rm \
 	-p 8080:8080 \
 	-v /etc/localtime:/etc/localtime \
-	-v "$(PWD)/test":/etc/dsc-connect \
-	-e VIRTUAL_HOST=dsc-connect.docker \
-	-e DSC_CONNECT_CONFIG=/etc/dsc-connect/config.yml \
-	--name dsc-connect \
+	-v "$(PWD)/test":/etc/dsc-alarm \
+	-e VIRTUAL_HOST=dsc-alarm-server.docker \
+	-e DSC_ALARM_CONFIG=/etc/dsc-alarm/config.yml \
+	--name dsc-alarm-server \
 	$(DOCKER_IMAGE_NAME) $(ARGS)
 
 push: build

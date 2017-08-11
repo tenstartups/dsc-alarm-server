@@ -3,6 +3,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'awesome_print'
 require 'pry'
+require 'yaml'
 
 # Require all library files
 %w( logging_helper command worker_thread_base action/base ).each do |file_name|
