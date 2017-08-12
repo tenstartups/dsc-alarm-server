@@ -18,6 +18,7 @@ RUN \
   apk update && \
   apk --update add \
     build-base \
+    git \
     libxml2-dev \
     libxslt-dev \
     ruby \
