@@ -30,6 +30,17 @@ RUN \
     zlib-dev && \
   rm -rf /var/cache/apk/*
 
+# Install unf_ext gem from source
+RUN \
+  cd /tmp && \
+  git clone https://github.com/knu/ruby-unf_ext.git && \
+  cd ruby-unf_ext && \
+  gem build ruby-unf_ext.gemspec && \
+  gem install ruby-unf_ext --no-document && \
+  gem install ruby-unf_ext --local --ignore-dependencies --no-document && \
+  cd .. && \
+  rm -rf ruby-unf_ext
+
 # Install gems.
 RUN \
   gem install --no-document \
