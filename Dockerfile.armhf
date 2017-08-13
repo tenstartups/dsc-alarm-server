@@ -36,9 +36,9 @@ RUN \
   cd /tmp && \
   git clone https://github.com/knu/ruby-unf_ext.git && \
   cd ruby-unf_ext && \
-  gem build ruby-unf_ext.gemspec && \
-  gem install ruby-unf_ext --no-document && \
-  gem install ruby-unf_ext --local --ignore-dependencies --no-document && \
+  gem build unf_ext.gemspec && \
+  gem install unf_ext --no-document && \
+  gem install unf_ext --local --ignore-dependencies --no-document && \
   cd .. && \
   rm -rf ruby-unf_ext
 
