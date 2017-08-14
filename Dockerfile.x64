@@ -54,10 +54,11 @@ RUN \
     rest-client \
     sinatra \
     slack-notifier \
+    ssdp \
     tzinfo-data
 
 # Add files to the container.
-COPY server ${RUBYLIB}
+COPY lib ${RUBYLIB}
 COPY entrypoint.rb /docker-entrypoint
 
 # Set the entrypoint script.

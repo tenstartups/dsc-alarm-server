@@ -14,7 +14,7 @@ module DSCConnect
         attachment[:color] = color if color
         params[:attachments] = [attachment]
         response = notifier.ping(nil, params)
-        info "Response : #{response.body}"
+        info "Response : #{response.map(&:body)}"
       rescue Errno::EINVAL, Errno::ECONNREFUSED, Errno::ECONNRESET,
              EOFError, SocketError, Timeout::Error, Net::HTTPBadResponse,
              Net::HTTPHeaderSyntaxError, Net::ProtocolError, RestClient::Unauthorized,
