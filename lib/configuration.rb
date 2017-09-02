@@ -11,12 +11,12 @@ module DSCConnect
 
     def initialize
       default_config = File.join(File.dirname(__FILE__), 'config_template.yml')
-      if ENV['DSC_ALARM_CONFIG'] && !File.exist?(ENV['DSC_ALARM_CONFIG'])
-        warn "Copying configuration template to #{ENV['DSC_ALARM_CONFIG']}"
-        FileUtils.mkdir_p(File.dirname(ENV['DSC_ALARM_CONFIG']))
-        FileUtils.cp(default_config, ENV['DSC_ALARM_CONFIG'])
+      if ENV['CONFIG_FILE'] && !File.exist?(ENV['CONFIG_FILE'])
+        warn "Copying configuration template to #{ENV['CONFIG_FILE']}"
+        FileUtils.mkdir_p(File.dirname(ENV['CONFIG_FILE']))
+        FileUtils.cp(default_config, ENV['CONFIG_FILE'])
       end
-      config = YAML.load_file(ENV['DSC_ALARM_CONFIG']) if ENV['DSC_ALARM_CONFIG'] && File.exist?(ENV['DSC_ALARM_CONFIG'])
+      config = YAML.load_file(ENV['CONFIG_FILE']) if ENV['CONFIG_FILE'] && File.exist?(ENV['CONFIG_FILE'])
       config ||= YAML.load_file(default_config)
       @config = RecursiveOpenStruct.new(config)
       super(@config)

@@ -17,7 +17,7 @@ run: build
 	-v /etc/localtime:/etc/localtime \
 	-v "$(PWD)/test":/etc/dsc-alarm \
 	-e VIRTUAL_HOST=dsc-alarm-server.docker \
-	-e DSC_ALARM_CONFIG=/etc/dsc-alarm/config.yml \
+	-e CONFIG_FILE=/etc/dsc-alarm/config.yml \
 	--name dsc-alarm-server \
 	$(DOCKER_IMAGE_NAME) $(ARGS)
 
