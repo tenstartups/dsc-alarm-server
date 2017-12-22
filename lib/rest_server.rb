@@ -16,11 +16,11 @@ module DSCConnect
     end
 
     def bind_address
-      ENV['LISTEN_ADDRESS'] || Configuration.instance.rest_server.try(:bind_address) || '0.0.0.0'
+      ENV['LISTEN_ADDRESS'] || (Configuration.instance.rest_server.bind_address rescue nil) || '0.0.0.0'
     end
 
     def bind_port
-      ENV['LISTEN_PORT'] || Configuration.instance.rest_server.try(:bind_port) || 8080
+      ENV['LISTEN_PORT'] || (Configuration.instance.rest_server.bind_port rescue nil) || 8080
     end
 
     private
