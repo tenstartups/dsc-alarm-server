@@ -11,15 +11,23 @@ LABEL maintainer="Marc Lennox <marc.lennox@gmail.com>"
 # Set environment variables.
 ENV \
   PAGER=more \
-  RUBYLIB=/usr/local/lib/ruby
+  RUBYLIB=/usr/local/lib/ruby \
+  TERM=xterm-color
 
 # Install packages.
 RUN \
   apk --update add \
+    bash \
     build-base \
+    busybox-extras \
+    coreutils \
+    curl \
     git \
     libxml2-dev \
     libxslt-dev \
+    nano \
+    procps \
+    rsync \
     ruby \
     ruby-bigdecimal \
     ruby-bundler \
@@ -27,6 +35,8 @@ RUN \
     ruby-irb \
     ruby-io-console \
     ruby-json \
+    tar \
+    wget \
     zlib-dev && \
   rm -rf /var/cache/apk/*
 
